@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>POS Billing Counter - Inventra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow-sm">
+        <a class="navbar-brand fw-bold fs-4" href="/">🛒 Inventra</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products">📦 Inventory</a></li>
+                <li class="nav-item"><a class="nav-link" href="/customers">📒 Khata</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pos">🧾 Billing (POS)</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container py-5" style="max-width: 650px;">
+        <div class="card shadow-sm border-0 p-4">
+            <h3 class="fw-bold text-dark mb-1">🧾 Cashier Billing Counter</h3>
+            <p class="text-muted small mb-4">Select items, enter quantity, choose payment method, and complete sale</p>
+
+            <!-- Checkout Form -->
+            <form th:action="@{/pos/checkout}" method="post">
+                <!-- Select Product (From Member 2) -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Select Product</label>
+                    <select name="productId" class="form-select" required>
+                        <option value="" disabled selected>-- Choose an item in stock --</option>
+                        <option th:each="product : ${products}" 
+                                th:value="${product.id}" 
+                                th:text="${product.name + ' — ₹' + product.price + ' (Available: ' + product.stockQuantity + ')'}">
+                            Atta 5kg — ₹250 (Available: 15)
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Quantity -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Quantity to Purchase</label>
+                    <input type="number" name="quantity" min="1" value="1" class="form-control" required>
+                </div>
+
+                <!-- Payment Type Selection -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Payment Method</label>
+                    <select name="paymentType" id="paymentTypeSelect" class="form-select" onchange="toggleCustomerSelect()" required>
+                        <option value="CASH">💵 Cash / UPI (Paid Now)</option>
+                        <option value="UDHAR">📒 Udhar / Credit (Add to Customer Khata)</option>
+                    </select>
+                </div>
+
+                <!-- Select Customer (From Member 3 - Only needed for Udhar) -->
+                <div class="mb-4" id="customerSelectBox" style="display: none;">
+                    <label class="form-label fw-bold text-danger">Select Customer for Khata Debt</label>
+                    <select name="customerId" class="form-select border-danger">
+                        <option value="" selected>-- Select Registered Customer --</option>
+                        <option th:each="customer : ${customers}" 
+                                th:value="${customer.id}" 
+                                th:text="${customer.name + ' (Phone: ' + customer.phone + ' | Current Debt: ₹' + customer.creditBalance + ')'}">
+                            Ramesh Kumar (Debt: ₹450)
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5">⚡ Complete Sale & Generate Receipt</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Customer Dropdown when Udhar is selected -->
+    <script>
+        function toggleCustomerSelect() {
+            var paymentType = document.getElementById("paymentTypeSelect").value;
+            var customerBox = document.getElementById("customerSelectBox");
+            if (paymentType === "UDHAR") {
+                customerBox.style.display = "block";
+            } else {
+                customerBox.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
