@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Khata - Inventra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow-sm">
+    <a class="navbar-brand fw-bold fs-4" href="/">🛒 Inventra</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/products">📦 Inventory</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/customers">📒 Khata</a></li>
+            <li class="nav-item"><a class="nav-link" href="/pos">🧾 Billing (POS)</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">📒 Customer Credit Ledger (Khata)</h2>
+            <p class="text-muted">Track customer phone numbers, outstanding debt balances, and log cash repayments</p>
+        </div>
+        <a href="/customers/add" class="btn btn-success px-4 py-2 fw-bold">👤 Register New Customer</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Current Udhar Balance</th>
+                        <th>Debt Status</th>
+                        <th>Clear / Repay Udhar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="customer : ${customers}">
+                        <td class="fw-bold text-muted" th:text="${'#C' + customer.id}">#C1</td>
+                        <td class="fw-bold text-dark" th:text="${customer.name}">Ramesh Kumar</td>
+                        <td th:text="${customer.phone}">9876543210</td>
+                        <td>
+                            <!-- Highlight debt in red -->
+                            <span th:class="${customer.creditBalance > 0} ? 'fw-bold text-danger fs-5' : 'fw-bold text-success fs-5'"
+                                  th:text="${'₹' + customer.creditBalance}">₹450.0</span>
+                        </td>
+                        <td>
+                            <span th:if="${customer.creditBalance > 0}" class="badge bg-danger">Pending Udhar</span>
+                            <span th:if="${customer.creditBalance == 0.0}" class="badge bg-success">All Cleared ✅</span>
+                        </td>
+                        <td>
+                            <!-- Inline Repayment Form -->
+                            <form th:action="@{/customers/repay}" method="post" class="d-flex gap-2" style="max-width: 250px;">
+                                <input type="hidden" name="customerId" th:value="${customer.id}">
+                                <input type="number" step="10" name="amountPaid" class="form-control form-control-sm" placeholder="₹ Paid" required>
+                                <button type="submit" class="btn btn-sm btn-outline-success text-nowrap">💰 Pay</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(customers)}">
+                        <td colspan="6" class="text-center py-4 text-muted">No customers registered yet. Click "Register New Customer" above!</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
