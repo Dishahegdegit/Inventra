@@ -3,130 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Inventra Retail Terminal</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Sign In — Inventra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Custom Theme -->
-    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        .login-box {
-            background: var(--card-surface);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            max-width: 460px;
-            width: 100%;
+        :root {
+            --obsidian:     #0b1013;
+            --surface:      #111820;
+            --card:         #161e27;
+            --border:       #1e2d3d;
+            --neon:         #39d98a;
+            --neon-dim:     rgba(57,217,138,.12);
+            --neon-glow:    rgba(57,217,138,.35);
+            --text-primary: #e8edf2;
+            --text-muted:   #5a7184;
+            --red:          #ff4757;
         }
-        .demo-chip {
-            background: #141c20;
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 10px 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-            width: 100%;
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--obsidian);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ─── LEFT PANEL ─────────────────────────────── */
+        .left-panel {
+            flex: 1;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* background grid pattern */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(57,217,138,.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(57,217,138,.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* neon glow blob */
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(57,217,138,.18) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* ── Brand logo top-left ── */
+        .brand-logo {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
         }
-        .demo-chip:hover {
-            border-color: var(--neon-mint);
-            background: #192429;
+        .brand-icon-box {
+            width: 40px; height: 40px;
+            background: var(--neon);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            color: #0b1013;
+            box-shadow: 0 0 20px var(--neon-glow);
+        }
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        /* ── Shelf Illustration (CSS art) ── */
+        .shelf-illustration {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shelf-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* shelf rows */
+        .shelf {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .shelf-plank {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #1e2d3d 0%, #253545 50%, #1e2d3d 100%);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.5);
+            margin-bottom: 18px;
+        }
+
+        /* product boxes on shelves */
+        .box {
+            border-radius: 8px;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+        }
+        .box-sm  { width: 48px; height: 56px; }
+        .box-md  { width: 60px; height: 70px; }
+        .box-lg  { width: 72px; height: 84px; }
+        .box-xl  { width: 88px; height: 100px; }
+
+        /* box colours */
+        .b-green  { background: linear-gradient(135deg, #1a4731, #39d98a22); border: 1px solid #39d98a44; color: var(--neon); }
+        .b-blue   { background: linear-gradient(135deg, #0d2240, #1e7ae022); border: 1px solid #1e7ae044; color: #60a5fa; }
+        .b-orange { background: linear-gradient(135deg, #3d1a06, #f97b1622); border: 1px solid #f97b1644; color: #fb923c; }
+        .b-purple { background: linear-gradient(135deg, #2d1a4d, #a855f722); border: 1px solid #a855f744; color: #c084fc; }
+        .b-red    { background: linear-gradient(135deg, #3d0d14, #f4433622); border: 1px solid #f4433644; color: #f87171; }
+        .b-teal   { background: linear-gradient(135deg, #0d3030, #14b8a622); border: 1px solid #14b8a644; color: #2dd4bf; }
+        .b-yellow { background: linear-gradient(135deg, #2d2200, #eab30822); border: 1px solid #eab30844; color: #fbbf24; }
+
+        /* box label stripe */
+        .box::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 8px; right: 8px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 2px;
+            opacity: .5;
+        }
+
+        /* floating stat cards */
+        .stat-float {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.5);
+            backdrop-filter: blur(10px);
+        }
+        .stat-float .stat-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .stat-float .stat-val  { font-weight: 700; font-size: 15px; color: #fff; }
+        .stat-float .stat-lbl  { font-size: 11px; color: var(--text-muted); }
+
+        .float-tl {
+            position: absolute;
+            top: 20px; right: -20px;
+            animation: floatY 4s ease-in-out infinite;
+        }
+        .float-br {
+            position: absolute;
+            bottom: 30px; left: -20px;
+            animation: floatY 4s ease-in-out infinite reverse;
+        }
+        @keyframes floatY {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-8px); }
+        }
+
+        /* barcode decoration */
+        .barcode {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            height: 32px;
+        }
+        .barcode span {
+            background: var(--neon);
+            border-radius: 1px;
+            opacity: .7;
+        }
+
+        /* ── Tagline ── */
+        .tagline-block {
+            position: relative;
+            z-index: 1;
+        }
+        .tagline-block h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .tagline-block h1 span { color: var(--neon); }
+        .tagline-block p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ─── RIGHT PANEL ────────────────────────────── */
+        .right-panel {
+            width: 480px;
+            flex-shrink: 0;
+            background: var(--obsidian);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 40px;
+            border-left: 1px solid var(--border);
+        }
+
+        .login-form-box {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-form-box h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .login-form-box .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        /* role pills info */
+        .role-info {
+            background: var(--neon-dim);
+            border: 1px solid rgba(57,217,138,.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--neon);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .role-info strong { color: #fff; }
+
+        /* form fields */
+        .field-group {
+            margin-bottom: 18px;
+        }
+        .field-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .field-wrap {
+            position: relative;
+        }
+        .field-wrap .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+            pointer-events: none;
+        }
+        .field-input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 14px 13px 42px;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .field-input::placeholder { color: var(--text-muted); }
+        .field-input:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 0 3px var(--neon-dim);
+            background: #111820;
+        }
+
+        /* eye toggle */
+        .eye-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+        }
+        .eye-toggle:hover { color: var(--neon); }
+
+        /* submit button */
+        .btn-signin {
+            width: 100%;
+            background: var(--neon);
+            color: #0b1013;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 0 24px rgba(57,217,138,.25);
+        }
+        .btn-signin:hover {
+            background: #4ff59e;
+            box-shadow: 0 0 32px rgba(57,217,138,.4);
+            transform: translateY(-1px);
+        }
+        .btn-signin:active { transform: translateY(0); }
+
+        /* alert */
+        .alert-error {
+            background: rgba(255,71,87,.12);
+            border: 1px solid rgba(255,71,87,.3);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: #ff6b81;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alert-success {
+            background: rgba(57,217,138,.1);
+            border: 1px solid rgba(57,217,138,.25);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: var(--neon);
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ─── Responsive ───── */
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; border-left: none; }
         }
     </style>
 </head>
-<body class="d-flex align-items-center justify-content-center py-5">
+<body>
 
-    <div class="login-box">
-        
-        <!-- Brand Header -->
-        <div class="text-center mb-4">
-            <div class="d-inline-flex align-items-center gap-2 mb-2">
-                <div class="brand-icon" style="width: 36px; height: 36px; font-size: 20px;">
-                    <i class="bi bi-box-seam-fill"></i>
+<!-- ══════════ LEFT PANEL ══════════ -->
+<div class="left-panel">
+
+    <!-- Brand -->
+    <div class="brand-logo">
+        <div class="brand-icon-box"><i class="bi bi-box-seam-fill"></i></div>
+        <span class="brand-name">inventra</span>
+    </div>
+
+    <!-- Shelf Illustration -->
+    <div class="shelf-illustration">
+        <div class="shelf-wrapper" style="position:relative;">
+
+            <!-- Floating stat card top -->
+            <div class="stat-float float-tl">
+                <div class="stat-icon" style="background:rgba(57,217,138,.12); color:var(--neon);">
+                    <i class="bi bi-graph-up-arrow"></i>
                 </div>
-                <span class="fs-3 fw-bold text-white">inventra</span>
+                <div>
+                    <div class="stat-val">₹24,890</div>
+                    <div class="stat-lbl">Today's Revenue</div>
+                </div>
             </div>
-            <p class="text-secondary small mb-0">Role-Based Retail POS & Inventory Terminal</p>
-        </div>
 
-        <!-- Feedback Alerts -->
-        <div th:if="${param.error}" class="alert alert-danger py-2 px-3 small border-0 mb-3" style="background: rgba(255, 71, 87, 0.2); color: #ff6b81;">
-            <i class="bi bi-exclamation-octagon-fill me-1"></i> Invalid username or password. Please try again.
-        </div>
+            <!-- Shelf Row 1 -->
+            <div class="shelf">
+                <div class="box box-lg b-green"><i class="bi bi-cup-hot-fill"></i></div>
+                <div class="box box-md b-orange"><i class="bi bi-egg-fill"></i></div>
+                <div class="box box-xl b-blue"><i class="bi bi-droplet-fill"></i></div>
+                <div class="box box-sm b-purple"><i class="bi bi-moon-stars-fill"></i></div>
+                <div class="box box-md b-teal"><i class="bi bi-leaf-fill"></i></div>
+                <div class="box box-lg b-yellow"><i class="bi bi-lightning-fill"></i></div>
+            </div>
+            <div class="shelf-plank"></div>
 
-        <div th:if="${param.logout}" class="alert alert-success py-2 px-3 small border-0 mb-3" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint);">
-            <i class="bi bi-check-circle-fill me-1"></i> You have logged out successfully.
-        </div>
+            <!-- Shelf Row 2 -->
+            <div class="shelf">
+                <div class="box box-md b-red"><i class="bi bi-fire"></i></div>
+                <div class="box box-xl b-green"><i class="bi bi-basket-fill"></i></div>
+                <div class="box box-sm b-blue"><i class="bi bi-snow"></i></div>
+                <div class="box box-lg b-yellow"><i class="bi bi-brightness-high-fill"></i></div>
+                <div class="box box-md b-purple"><i class="bi bi-flower1"></i></div>
+                <div class="box box-sm b-orange"><i class="bi bi-heart-fill"></i></div>
+            </div>
+            <div class="shelf-plank"></div>
 
-        <!-- 1-Click Demo Login Selector for Viva/Presentations -->
-        <div class="mb-4">
-            <label class="form-label text-secondary small fw-bold mb-2">1-CLICK DEMO CREDENTIALS</label>
-            <div class="d-flex flex-column gap-2">
-                <button type="button" class="demo-chip" onclick="fillCredentials('admin', 'admin123')">
-                    <div>
-                        <div class="fw-bold text-white small">👑 Store Owner (Admin)</div>
-                        <div class="text-secondary" style="font-size: 11px;">Full access • Analytics, Stock & Settings</div>
-                    </div>
-                    <span class="badge" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint);">admin</span>
-                </button>
+            <!-- Shelf Row 3 -->
+            <div class="shelf">
+                <div class="box box-sm b-teal"><i class="bi bi-water"></i></div>
+                <div class="box box-lg b-red"><i class="bi bi-trophy-fill"></i></div>
+                <div class="box box-md b-yellow"><i class="bi bi-sun-fill"></i></div>
+                <div class="box box-xl b-green"><i class="bi bi-tree-fill"></i></div>
+                <div class="box box-sm b-blue"><i class="bi bi-cloud-fill"></i></div>
+                <div class="box box-md b-purple"><i class="bi bi-gem"></i></div>
+            </div>
+            <div class="shelf-plank"></div>
 
-                <button type="button" class="demo-chip" onclick="fillCredentials('cashier', 'cashier123')">
-                    <div>
-                        <div class="fw-bold text-white small">🧑‍💼 Cashier (Staff)</div>
-                        <div class="text-secondary" style="font-size: 11px;">Fast POS Billing Lane • Cannot delete stock</div>
-                    </div>
-                    <span class="badge" style="background: rgba(55, 66, 250, 0.15); color: #70a1ff;">cashier</span>
-                </button>
+            <!-- Floating stat card bottom -->
+            <div class="stat-float float-br">
+                <div class="stat-icon" style="background:rgba(96,165,250,.1); color:#60a5fa;">
+                    <i class="bi bi-boxes"></i>
+                </div>
+                <div>
+                    <div class="stat-val">1,284</div>
+                    <div class="stat-lbl">Items In Stock</div>
+                </div>
+            </div>
+
+            <!-- Barcode decoration -->
+            <div class="mt-4 d-flex align-items-center gap-3">
+                <div class="barcode" id="bc"></div>
+                <span style="font-size:11px; color:var(--text-muted); font-weight:600; letter-spacing:.05em;">INVENTRA-POS-2026</span>
             </div>
         </div>
+    </div>
 
-        <div class="d-flex align-items-center my-3">
-            <hr class="flex-grow-1" style="border-color: var(--card-border);">
-            <span class="px-3 text-secondary small">or enter manually</span>
-            <hr class="flex-grow-1" style="border-color: var(--card-border);">
+    <!-- Tagline -->
+    <div class="tagline-block">
+        <h1>Smart Stock.<br><span>Smarter</span> Sales.</h1>
+        <p>Your all-in-one retail POS, inventory tracker,<br>and customer credit ledger — in one terminal.</p>
+    </div>
+
+</div>
+
+<!-- ══════════ RIGHT PANEL ══════════ -->
+<div class="right-panel">
+    <div class="login-form-box">
+
+        <h2>Welcome back 👋</h2>
+        <p class="subtitle">Sign in to your Inventra terminal to continue.</p>
+
+        <!-- role hint -->
+        <div class="role-info">
+            <i class="bi bi-info-circle me-1"></i>
+            <strong>Admin</strong> → full dashboard access &nbsp;|&nbsp;
+            <strong>Cashier</strong> → goes directly to POS billing screen
+        </div>
+
+        <!-- Error / Logout alerts -->
+        <div th:if="${param.error}" class="alert-error">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+            Invalid username or password. Please try again.
+        </div>
+        <div th:if="${param.logout}" class="alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            Logged out successfully.
         </div>
 
         <!-- Login Form -->
         <form th:action="@{/login}" method="post">
-            
-            <div class="mb-3">
-                <label class="form-label text-secondary small fw-bold">USERNAME</label>
-                <div class="position-relative">
-                    <i class="bi bi-person position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                    <input type="text" name="username" id="usernameInput" class="inventoory-search" placeholder="Enter username" required autofocus>
+
+            <div class="field-group">
+                <label class="field-label" for="username">Username</label>
+                <div class="field-wrap">
+                    <i class="bi bi-person field-icon"></i>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="field-input"
+                        placeholder="e.g. admin or cashier"
+                        required
+                        autofocus
+                        autocomplete="username">
                 </div>
             </div>
 
-            <div class="mb-4">
-                <label class="form-label text-secondary small fw-bold">PASSWORD</label>
-                <div class="position-relative">
-                    <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                    <input type="password" name="password" id="passwordInput" class="inventoory-search" placeholder="Enter password" required>
+            <div class="field-group">
+                <label class="field-label" for="password">Password</label>
+                <div class="field-wrap">
+                    <i class="bi bi-lock field-icon"></i>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="field-input"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password">
+                    <button type="button" class="eye-toggle" onclick="togglePwd()">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill shadow" style="background: var(--neon-mint); color: #0b1013;">
-                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Terminal
+            <button type="submit" class="btn-signin">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Sign In to Terminal
             </button>
+
         </form>
 
-        <div class="text-center mt-4">
-            <small class="text-secondary" style="font-size: 11px;">Powered by Spring Security 6 & Inventra Enterprise</small>
+        <div class="footer-note">
+            &copy; 2026 Inventra &nbsp;·&nbsp; Retail POS &amp; Khata System &nbsp;·&nbsp; v2.0
         </div>
 
     </div>
+</div>
 
-    <script>
-        function fillCredentials(user, pass) {
-            document.getElementById('usernameInput').value = user;
-            document.getElementById('passwordInput').value = pass;
+<script>
+    // Show/hide password
+    function togglePwd() {
+        const pwd = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            pwd.type = 'password';
+            icon.className = 'bi bi-eye';
         }
-    </script>
+    }
+
+    // Generate barcode bars
+    const bc = document.getElementById('bc');
+    if (bc) {
+        const pattern = [3,1,2,1,3,2,1,4,1,2,3,1,2,1,3,1,4,2,1,3,2,1,2,3];
+        pattern.forEach((h, i) => {
+            const bar = document.createElement('span');
+            bar.style.cssText = `width:${i%3===0?3:2}px; height:${h*7+4}px; opacity:${0.4+h*0.1}`;
+            bc.appendChild(bar);
+        });
+    }
+</script>
 
 </body>
 </html>
