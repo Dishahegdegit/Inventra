@@ -3,583 +3,621 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Inventra</title>
+    <title>Sign In — Inventra Terminal</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Plus Jakarta Sans Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --obsidian:     #0b1013;
-            --surface:      #111820;
-            --card:         #161e27;
-            --border:       #1e2d3d;
-            --neon:         #39d98a;
-            --neon-dim:     rgba(57,217,138,.12);
-            --neon-glow:    rgba(57,217,138,.35);
-            --text-primary: #e8edf2;
-            --text-muted:   #5a7184;
-            --red:          #ff4757;
+            --bg-obsidian: #0a0e11;
+            --bg-surface:  #11171d;
+            --bg-card:     #161f28;
+            --border-dim:  #1d2936;
+            --border-focus:#00dc82;
+            --neon-mint:   #00dc82;
+            --neon-glow:   rgba(0, 220, 130, 0.25);
+            --text-main:   #edf2f7;
+            --text-sub:    #7b8f9f;
+            --danger:      #ff4d4d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--obsidian);
-            color: var(--text-primary);
+            background: var(--bg-obsidian);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
+            align-items: stretch;
+            overflow-x: hidden;
         }
 
-        /* ─── LEFT PANEL ─────────────────────────────── */
-        .left-panel {
-            flex: 1;
-            background: var(--surface);
+        /* ─── GRID LAYOUT: 55% LEFT / 45% RIGHT ─── */
+        .login-wrapper {
+            display: flex;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        /* ─── LEFT SHOWCASE PANEL ─── */
+        .showcase-panel {
+            flex: 1.15;
+            background: radial-gradient(circle at 10% 20%, #131d24 0%, #0c1216 100%);
+            border-right: 1px solid var(--border-dim);
+            padding: 56px 64px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 48px;
             position: relative;
-            overflow: hidden;
         }
 
-        /* background grid pattern */
-        .left-panel::before {
+        .showcase-panel::before {
             content: '';
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(57,217,138,.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(57,217,138,.04) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-
-        /* neon glow blob */
-        .left-panel::after {
-            content: '';
-            position: absolute;
-            bottom: -80px;
-            left: -80px;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(57,217,138,.18) 0%, transparent 70%);
-            border-radius: 50%;
+                linear-gradient(rgba(0, 220, 130, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 220, 130, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
             pointer-events: none;
         }
 
-        /* ── Brand logo top-left ── */
-        .brand-logo {
+        /* Brand */
+        .brand-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
-        .brand-icon-box {
-            width: 40px; height: 40px;
-            background: var(--neon);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-            color: #0b1013;
-            box-shadow: 0 0 20px var(--neon-glow);
-        }
-        .brand-name {
+        .brand-box {
+            width: 42px;
+            height: 42px;
+            background: var(--neon-mint);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #05140d;
             font-size: 22px;
+            box-shadow: 0 0 24px var(--neon-glow);
+        }
+        .brand-title {
+            font-size: 24px;
             font-weight: 800;
-            color: #fff;
             letter-spacing: -0.5px;
+            color: #ffffff;
         }
-
-        /* ── Shelf Illustration (CSS art) ── */
-        .shelf-illustration {
-            position: relative;
-            z-index: 1;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .shelf-wrapper {
-            width: 100%;
-            max-width: 420px;
-        }
-
-        /* shelf rows */
-        .shelf {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-        .shelf-plank {
-            width: 100%;
-            height: 8px;
-            background: linear-gradient(90deg, #1e2d3d 0%, #253545 50%, #1e2d3d 100%);
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,.5);
-            margin-bottom: 18px;
-        }
-
-        /* product boxes on shelves */
-        .box {
-            border-radius: 8px;
-            position: relative;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,.4);
-        }
-        .box-sm  { width: 48px; height: 56px; }
-        .box-md  { width: 60px; height: 70px; }
-        .box-lg  { width: 72px; height: 84px; }
-        .box-xl  { width: 88px; height: 100px; }
-
-        /* box colours */
-        .b-green  { background: linear-gradient(135deg, #1a4731, #39d98a22); border: 1px solid #39d98a44; color: var(--neon); }
-        .b-blue   { background: linear-gradient(135deg, #0d2240, #1e7ae022); border: 1px solid #1e7ae044; color: #60a5fa; }
-        .b-orange { background: linear-gradient(135deg, #3d1a06, #f97b1622); border: 1px solid #f97b1644; color: #fb923c; }
-        .b-purple { background: linear-gradient(135deg, #2d1a4d, #a855f722); border: 1px solid #a855f744; color: #c084fc; }
-        .b-red    { background: linear-gradient(135deg, #3d0d14, #f4433622); border: 1px solid #f4433644; color: #f87171; }
-        .b-teal   { background: linear-gradient(135deg, #0d3030, #14b8a622); border: 1px solid #14b8a644; color: #2dd4bf; }
-        .b-yellow { background: linear-gradient(135deg, #2d2200, #eab30822); border: 1px solid #eab30844; color: #fbbf24; }
-
-        /* box label stripe */
-        .box::after {
-            content: '';
-            position: absolute;
-            bottom: 10px;
-            left: 8px; right: 8px;
-            height: 4px;
-            background: currentColor;
-            border-radius: 2px;
-            opacity: .5;
-        }
-
-        /* floating stat cards */
-        .stat-float {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 8px 24px rgba(0,0,0,.5);
-            backdrop-filter: blur(10px);
-        }
-        .stat-float .stat-icon {
-            width: 36px; height: 36px;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px;
-        }
-        .stat-float .stat-val  { font-weight: 700; font-size: 15px; color: #fff; }
-        .stat-float .stat-lbl  { font-size: 11px; color: var(--text-muted); }
-
-        .float-tl {
-            position: absolute;
-            top: 20px; right: -20px;
-            animation: floatY 4s ease-in-out infinite;
-        }
-        .float-br {
-            position: absolute;
-            bottom: 30px; left: -20px;
-            animation: floatY 4s ease-in-out infinite reverse;
-        }
-        @keyframes floatY {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-8px); }
-        }
-
-        /* barcode decoration */
-        .barcode {
-            display: flex;
-            gap: 2px;
-            align-items: flex-end;
-            height: 32px;
-        }
-        .barcode span {
-            background: var(--neon);
-            border-radius: 1px;
-            opacity: .7;
-        }
-
-        /* ── Tagline ── */
-        .tagline-block {
-            position: relative;
-            z-index: 1;
-        }
-        .tagline-block h1 {
-            font-size: 32px;
-            font-weight: 800;
-            line-height: 1.2;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .tagline-block h1 span { color: var(--neon); }
-        .tagline-block p {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        /* ─── RIGHT PANEL ────────────────────────────── */
-        .right-panel {
-            width: 480px;
-            flex-shrink: 0;
-            background: var(--obsidian);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 40px;
-            border-left: 1px solid var(--border);
-        }
-
-        .login-form-box {
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .login-form-box h2 {
-            font-size: 26px;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-        .login-form-box .subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-        }
-
-        /* role pills info */
-        .role-info {
-            background: var(--neon-dim);
-            border: 1px solid rgba(57,217,138,.2);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 12px;
-            color: var(--neon);
-            margin-bottom: 28px;
-            line-height: 1.6;
-        }
-        .role-info strong { color: #fff; }
-
-        /* form fields */
-        .field-group {
-            margin-bottom: 18px;
-        }
-        .field-label {
+        .brand-badge {
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: .08em;
-            color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .field-wrap {
-            position: relative;
-        }
-        .field-wrap .field-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 16px;
-            pointer-events: none;
-        }
-        .field-input {
-            width: 100%;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 13px 14px 13px 42px;
-            color: var(--text-primary);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 14px;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        .field-input::placeholder { color: var(--text-muted); }
-        .field-input:focus {
-            border-color: var(--neon);
-            box-shadow: 0 0 0 3px var(--neon-dim);
-            background: #111820;
+            letter-spacing: 0.08em;
+            background: rgba(0, 220, 130, 0.12);
+            color: var(--neon-mint);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 220, 130, 0.25);
+            margin-left: 6px;
         }
 
-        /* eye toggle */
-        .eye-toggle {
+        /* Headline & Overview */
+        .hero-content {
+            margin-top: 36px;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero-title {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.8px;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+        .hero-title span {
+            color: var(--neon-mint);
+        }
+        .hero-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-sub);
+            max-width: 520px;
+        }
+
+        /* Real Inventory Terminal Card Showcase */
+        .preview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-dim);
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+        }
+        .preview-header-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-mint);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-mint);
+        }
+
+        /* Metric Highlights inside Showcase */
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .metric-tile {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-sub);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        .metric-value {
+            font-size: 19px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Product Stock Snapshot Items */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .stock-item {
+            background: rgba(17, 23, 29, 0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .item-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 220, 130, 0.08);
+            border: 1px solid rgba(0, 220, 130, 0.2);
+            color: var(--neon-mint);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+        .item-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .item-category {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+        .item-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .badge-optimal {
+            background: rgba(0, 220, 130, 0.12);
+            color: var(--neon-mint);
+            border: 1px solid rgba(0, 220, 130, 0.25);
+        }
+        .badge-warning {
+            background: rgba(255, 179, 0, 0.12);
+            color: #ffb300;
+            border: 1px solid rgba(255, 179, 0, 0.25);
+        }
+
+        /* Left Footer */
+        .showcase-footer {
+            margin-top: 28px;
+            font-size: 12px;
+            color: var(--text-sub);
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ─── RIGHT LOGIN FORM PANEL ─── */
+        .form-panel {
+            flex: 0.85;
+            background: var(--bg-obsidian);
+            padding: 56px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-head {
+            margin-bottom: 32px;
+        }
+        .login-head h2 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .login-head p {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        /* Form Inputs */
+        .input-group-custom {
+            margin-bottom: 22px;
+        }
+        .input-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            font-size: 17px;
+            pointer-events: none;
+        }
+        .form-control-custom {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 14px 16px 14px 46px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .form-control-custom::placeholder {
+            color: #485968;
+        }
+        .form-control-custom:focus {
+            border-color: var(--neon-mint);
+            box-shadow: 0 0 0 3px rgba(0, 220, 130, 0.15);
+            background: var(--bg-surface);
+        }
+
+        /* Password Eye Toggle */
+        .pwd-toggle-btn {
             position: absolute;
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: transparent;
             border: none;
-            color: var(--text-muted);
+            color: var(--text-sub);
+            font-size: 17px;
             cursor: pointer;
-            font-size: 16px;
-            padding: 0;
+            padding: 4px;
+            line-height: 1;
         }
-        .eye-toggle:hover { color: var(--neon); }
+        .pwd-toggle-btn:hover {
+            color: var(--neon-mint);
+        }
 
-        /* submit button */
-        .btn-signin {
+        /* Submit Button */
+        .submit-btn {
             width: 100%;
-            background: var(--neon);
-            color: #0b1013;
+            background: var(--neon-mint);
+            color: #071710;
             border: none;
-            border-radius: 10px;
-            padding: 14px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: inherit;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.01em;
             cursor: pointer;
-            margin-top: 8px;
-            transition: all .2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px var(--neon-glow);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            box-shadow: 0 0 24px rgba(57,217,138,.25);
+            gap: 10px;
+            margin-top: 10px;
         }
-        .btn-signin:hover {
-            background: #4ff59e;
-            box-shadow: 0 0 32px rgba(57,217,138,.4);
+        .submit-btn:hover {
+            background: #25e595;
+            box-shadow: 0 6px 26px rgba(0, 220, 130, 0.4);
             transform: translateY(-1px);
         }
-        .btn-signin:active { transform: translateY(0); }
-
-        /* alert */
-        .alert-error {
-            background: rgba(255,71,87,.12);
-            border: 1px solid rgba(255,71,87,.3);
-            border-radius: 10px;
-            padding: 11px 14px;
-            color: #ff6b81;
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .alert-success {
-            background: rgba(57,217,138,.1);
-            border: 1px solid rgba(57,217,138,.25);
-            border-radius: 10px;
-            padding: 11px 14px;
-            color: var(--neon);
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
-        .footer-note {
+        /* Alerts */
+        .custom-alert-error {
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #ff6b6b;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .custom-alert-logout {
+            background: rgba(0, 220, 130, 0.1);
+            border: 1px solid rgba(0, 220, 130, 0.25);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--neon-mint);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .form-footer {
+            margin-top: 36px;
             text-align: center;
-            margin-top: 28px;
-            font-size: 11px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--text-sub);
         }
 
-        /* ─── Responsive ───── */
-        @media (max-width: 768px) {
-            .left-panel { display: none; }
-            .right-panel { width: 100%; border-left: none; }
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 992px) {
+            .showcase-panel { display: none; }
+            .form-panel { flex: 1; padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ══════════ LEFT PANEL ══════════ -->
-<div class="left-panel">
+<div class="login-wrapper">
 
-    <!-- Brand -->
-    <div class="brand-logo">
-        <div class="brand-icon-box"><i class="bi bi-box-seam-fill"></i></div>
-        <span class="brand-name">inventra</span>
-    </div>
+    <!-- ══════════ LEFT SHOWCASE PANEL ══════════ -->
+    <div class="showcase-panel">
 
-    <!-- Shelf Illustration -->
-    <div class="shelf-illustration">
-        <div class="shelf-wrapper" style="position:relative;">
-
-            <!-- Floating stat card top -->
-            <div class="stat-float float-tl">
-                <div class="stat-icon" style="background:rgba(57,217,138,.12); color:var(--neon);">
-                    <i class="bi bi-graph-up-arrow"></i>
-                </div>
-                <div>
-                    <div class="stat-val">₹24,890</div>
-                    <div class="stat-lbl">Today's Revenue</div>
-                </div>
+        <!-- Top Brand -->
+        <div class="brand-header">
+            <div class="brand-box">
+                <i class="bi bi-box-seam-fill"></i>
             </div>
-
-            <!-- Shelf Row 1 -->
-            <div class="shelf">
-                <div class="box box-lg b-green"><i class="bi bi-cup-hot-fill"></i></div>
-                <div class="box box-md b-orange"><i class="bi bi-egg-fill"></i></div>
-                <div class="box box-xl b-blue"><i class="bi bi-droplet-fill"></i></div>
-                <div class="box box-sm b-purple"><i class="bi bi-moon-stars-fill"></i></div>
-                <div class="box box-md b-teal"><i class="bi bi-leaf-fill"></i></div>
-                <div class="box box-lg b-yellow"><i class="bi bi-lightning-fill"></i></div>
-            </div>
-            <div class="shelf-plank"></div>
-
-            <!-- Shelf Row 2 -->
-            <div class="shelf">
-                <div class="box box-md b-red"><i class="bi bi-fire"></i></div>
-                <div class="box box-xl b-green"><i class="bi bi-basket-fill"></i></div>
-                <div class="box box-sm b-blue"><i class="bi bi-snow"></i></div>
-                <div class="box box-lg b-yellow"><i class="bi bi-brightness-high-fill"></i></div>
-                <div class="box box-md b-purple"><i class="bi bi-flower1"></i></div>
-                <div class="box box-sm b-orange"><i class="bi bi-heart-fill"></i></div>
-            </div>
-            <div class="shelf-plank"></div>
-
-            <!-- Shelf Row 3 -->
-            <div class="shelf">
-                <div class="box box-sm b-teal"><i class="bi bi-water"></i></div>
-                <div class="box box-lg b-red"><i class="bi bi-trophy-fill"></i></div>
-                <div class="box box-md b-yellow"><i class="bi bi-sun-fill"></i></div>
-                <div class="box box-xl b-green"><i class="bi bi-tree-fill"></i></div>
-                <div class="box box-sm b-blue"><i class="bi bi-cloud-fill"></i></div>
-                <div class="box box-md b-purple"><i class="bi bi-gem"></i></div>
-            </div>
-            <div class="shelf-plank"></div>
-
-            <!-- Floating stat card bottom -->
-            <div class="stat-float float-br">
-                <div class="stat-icon" style="background:rgba(96,165,250,.1); color:#60a5fa;">
-                    <i class="bi bi-boxes"></i>
-                </div>
-                <div>
-                    <div class="stat-val">1,284</div>
-                    <div class="stat-lbl">Items In Stock</div>
-                </div>
-            </div>
-
-            <!-- Barcode decoration -->
-            <div class="mt-4 d-flex align-items-center gap-3">
-                <div class="barcode" id="bc"></div>
-                <span style="font-size:11px; color:var(--text-muted); font-weight:600; letter-spacing:.05em;">INVENTRA-POS-2026</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tagline -->
-    <div class="tagline-block">
-        <h1>Smart Stock.<br><span>Smarter</span> Sales.</h1>
-        <p>Your all-in-one retail POS, inventory tracker,<br>and customer credit ledger — in one terminal.</p>
-    </div>
-
-</div>
-
-<!-- ══════════ RIGHT PANEL ══════════ -->
-<div class="right-panel">
-    <div class="login-form-box">
-
-        <h2>Welcome back 👋</h2>
-        <p class="subtitle">Sign in to your Inventra terminal to continue.</p>
-
-        <!-- role hint -->
-        <div class="role-info">
-            <i class="bi bi-info-circle me-1"></i>
-            <strong>Admin</strong> → full dashboard access &nbsp;|&nbsp;
-            <strong>Cashier</strong> → goes directly to POS billing screen
+            <span class="brand-title">inventra</span>
+            <span class="brand-badge">Retail Terminal</span>
         </div>
 
-        <!-- Error / Logout alerts -->
-        <div th:if="${param.error}" class="alert-error">
-            <i class="bi bi-exclamation-octagon-fill"></i>
-            Invalid username or password. Please try again.
-        </div>
-        <div th:if="${param.logout}" class="alert-success">
-            <i class="bi bi-check-circle-fill"></i>
-            Logged out successfully.
+        <!-- Hero Headline & Description -->
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Smart Retail POS &amp;<br>
+                <span>Inventory Ledger</span>
+            </h1>
+            <p class="hero-desc">
+                Real-time stock monitoring, automated customer khata reconciliation, and fast point-of-sale checkout in one unified workspace.
+            </p>
         </div>
 
-        <!-- Login Form -->
-        <form action="/login" method="post">
+        <!-- Real-time Retail Overview Showcase Card -->
+        <div class="preview-card">
+            <div class="preview-header">
+                <div class="preview-header-title">
+                    <span class="pulse-indicator"></span>
+                    Terminal Stock Live Feed
+                </div>
+                <span class="item-badge badge-optimal">System Active</span>
+            </div>
 
-            <div class="field-group">
-                <label class="field-label" for="username">Username</label>
-                <div class="field-wrap">
-                    <i class="bi bi-person field-icon"></i>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        class="field-input"
-                        placeholder="e.g. admin or cashier"
-                        required
-                        autofocus
-                        autocomplete="username">
+            <!-- Key Metrics -->
+            <div class="metric-row">
+                <div class="metric-tile">
+                    <div class="metric-label">Active SKUs</div>
+                    <div class="metric-value">1,284</div>
+                </div>
+                <div class="metric-tile">
+                    <div class="metric-label">Today's POS</div>
+                    <div class="metric-value">₹24,890</div>
+                </div>
+                <div class="metric-tile">
+                    <div class="metric-label">Khata Due</div>
+                    <div class="metric-value">₹4,120</div>
                 </div>
             </div>
 
-            <div class="field-group">
-                <label class="field-label" for="password">Password</label>
-                <div class="field-wrap">
-                    <i class="bi bi-lock field-icon"></i>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="field-input"
-                        placeholder="Enter your password"
-                        required
-                        autocomplete="current-password">
-                    <button type="button" class="eye-toggle" onclick="togglePwd()">
-                        <i class="bi bi-eye" id="eyeIcon"></i>
-                    </button>
+            <!-- Sample Product Snapshot -->
+            <div class="item-list">
+                <div class="stock-item">
+                    <div class="item-meta">
+                        <div class="item-icon"><i class="bi bi-bag-check-fill"></i></div>
+                        <div>
+                            <div class="item-name">Fortune Sunlite Oil 1L</div>
+                            <div class="item-category">SKU-OIL-102 &bull; Groceries</div>
+                        </div>
+                    </div>
+                    <span class="item-badge badge-optimal">48 in stock</span>
+                </div>
+
+                <div class="stock-item">
+                    <div class="item-meta">
+                        <div class="item-icon"><i class="bi bi-box-fill"></i></div>
+                        <div>
+                            <div class="item-name">Aashirvaad Atta 5kg</div>
+                            <div class="item-category">SKU-ATT-204 &bull; Staples</div>
+                        </div>
+                    </div>
+                    <span class="item-badge badge-optimal">25 in stock</span>
+                </div>
+
+                <div class="stock-item">
+                    <div class="item-meta">
+                        <div class="item-icon"><i class="bi bi-cup-hot-fill"></i></div>
+                        <div>
+                            <div class="item-name">Tata Tea Gold 500g</div>
+                            <div class="item-category">SKU-TEA-301 &bull; Beverages</div>
+                        </div>
+                    </div>
+                    <span class="item-badge badge-warning">6 low stock</span>
                 </div>
             </div>
+        </div>
 
-            <button type="submit" class="btn-signin">
-                <i class="bi bi-box-arrow-in-right"></i>
-                Sign In to Terminal
-            </button>
-
-        </form>
-
-        <div class="footer-note">
-            &copy; 2026 Inventra &nbsp;·&nbsp; Retail POS &amp; Khata System &nbsp;·&nbsp; v2.0
+        <!-- Showcase Footer -->
+        <div class="showcase-footer">
+            <span><i class="bi bi-shield-check text-success me-1"></i> Role-Based Access Control</span>
+            <span>&bull;</span>
+            <span><i class="bi bi-hdd-network text-info me-1"></i> Multi-Terminal Synchronized</span>
         </div>
 
     </div>
+
+    <!-- ══════════ RIGHT LOGIN FORM PANEL ══════════ -->
+    <div class="form-panel">
+        <div class="form-container">
+
+            <!-- Title & Subtitle -->
+            <div class="login-head">
+                <h2>Sign In</h2>
+                <p>Enter your credentials to access the terminal.</p>
+            </div>
+
+            <!-- Error Alerts -->
+            <div th:if="${param.error}" class="custom-alert-error">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>Invalid username or password. Please verify your credentials.</span>
+            </div>
+
+            <div th:if="${param.logout}" class="custom-alert-logout">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>You have been signed out successfully.</span>
+            </div>
+
+            <!-- Manual Login Form (Plain Action to avoid CSRF session issues) -->
+            <form action="/login" method="post">
+
+                <!-- Username Input -->
+                <div class="input-group-custom">
+                    <label class="input-label" for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-person input-icon"></i>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control-custom"
+                            placeholder="Enter username"
+                            required
+                            autofocus
+                            autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="input-group-custom">
+                    <label class="input-label" for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control-custom"
+                            placeholder="Enter password"
+                            required
+                            autocomplete="current-password">
+                        <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye" id="pwdEyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Sign In to Terminal
+                </button>
+
+            </form>
+
+            <div class="form-footer">
+                &copy; 2026 Inventra &bull; Retail POS &amp; Credit Ledger &bull; v2.0
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // Show/hide password
-    function togglePwd() {
-        const pwd = document.getElementById('password');
-        const icon = document.getElementById('eyeIcon');
-        if (pwd.type === 'password') {
-            pwd.type = 'text';
+    function togglePasswordVisibility() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('pwdEyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
             icon.className = 'bi bi-eye-slash';
         } else {
-            pwd.type = 'password';
+            input.type = 'password';
             icon.className = 'bi bi-eye';
         }
-    }
-
-    // Generate barcode bars
-    const bc = document.getElementById('bc');
-    if (bc) {
-        const pattern = [3,1,2,1,3,2,1,4,1,2,3,1,2,1,3,1,4,2,1,3,2,1,2,3];
-        pattern.forEach((h, i) => {
-            const bar = document.createElement('span');
-            bar.style.cssText = `width:${i%3===0?3:2}px; height:${h*7+4}px; opacity:${0.4+h*0.1}`;
-            bc.appendChild(bar);
-        });
     }
 </script>
 
