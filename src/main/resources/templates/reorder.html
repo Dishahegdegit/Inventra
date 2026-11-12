@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Purchase Order ' + ${poNumber} + ' — Inventra'">Supplier Purchase Order — Inventra</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Plus Jakarta Sans Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+
+    <style>
+        :root {
+            --neon-mint: #00dc82;
+            --dark-card: #11171d;
+            --card-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background: #0a0e11;
+            color: #edf2f7;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .po-container {
+            max-width: 1060px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        .po-paper {
+            background: #11171d;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 36px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .po-paper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00dc82 0%, #1e90ff 50%, #9b51e0 100%);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .action-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-toolbar-nav {
+            background: #162029;
+            border: 1px solid var(--card-border);
+            color: #ffffff;
+            border-radius: 30px;
+            padding: 9px 20px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-toolbar-nav:hover {
+            border-color: var(--neon-mint);
+            color: var(--neon-mint);
+            background: #1c2a36;
+        }
+
+        .btn-print-action {
+            background: var(--neon-mint);
+            color: #071710;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 20px rgba(0, 220, 130, 0.35);
+        }
+        .btn-print-action:hover {
+            background: #25e595;
+            transform: translateY(-1px);
+            box-shadow: 0 0 25px rgba(0, 220, 130, 0.5);
+        }
+
+        .btn-csv-export {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff6b81;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            border-radius: 30px;
+            padding: 9px 20px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-csv-export:hover {
+            background: rgba(255, 71, 87, 0.25);
+            color: #ff8598;
+        }
+
+        .po-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+
+        .po-table th {
+            background: #172129;
+            color: #8da2b5;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            border-top: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .po-table td {
+            padding: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+            font-size: 13.5px;
+        }
+
+        .po-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .stat-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .metric-pill {
+            background: #162029;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        /* ══════════════════════════════════════════
+           PRINT MEDIA OPTIMIZATION (CRISP DOCUMENT)
+           ══════════════════════════════════════════ */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-family: Arial, sans-serif !important;
+                font-size: 12px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .no-print, .no-print * {
+                display: none !important;
+            }
+
+            .po-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .po-paper {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .po-paper::before {
+                display: none !important;
+            }
+
+            .po-table th {
+                background: #f0f2f5 !important;
+                color: #000000 !important;
+                border-top: 2px solid #000000 !important;
+                border-bottom: 2px solid #000000 !important;
+            }
+
+            .po-table td {
+                border-bottom: 1px solid #cccccc !important;
+                color: #000000 !important;
+            }
+
+            .text-white, .text-secondary, .text-info, .text-success, h1, h2, h3, h4, h5, h6, p, span, strong, div, td, th {
+                color: #000000 !important;
+            }
+
+            .stat-badge {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                background: transparent !important;
+            }
+
+            .metric-pill {
+                background: #ffffff !important;
+                border: 1px solid #000000 !important;
+            }
+
+            .border-top-print {
+                border-top: 2px solid #000000 !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="po-container">
+
+        <!-- ══════════ SCREEN ACTION TOOLBAR (Hidden in Print) ══════════ -->
+        <div class="action-toolbar no-print">
+            <div class="d-flex align-items-center gap-2">
+                <a href="/products" class="btn-toolbar-nav">
+                    <i class="bi bi-arrow-left"></i> Product Master
+                </a>
+                <a href="/" class="btn-toolbar-nav">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/products/reorder-export" class="btn-csv-export" title="Export as CSV spreadsheet">
+                    <i class="bi bi-file-earmark-spreadsheet-fill"></i> 📥 Download Reorder CSV
+                </a>
+                <button type="button" class="btn-print-action" onclick="window.print()">
+                    <i class="bi bi-printer-fill"></i> 🖨️ Print Purchase Order
+                </button>
+            </div>
+        </div>
+
+        <!-- ══════════ OFFICIAL PURCHASE ORDER DOCUMENT ══════════ -->
+        <div class="po-paper">
+
+            <!-- PO Header & Store Profile -->
+            <div class="row align-items-start pb-4 border-bottom" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                <div class="col-sm-7">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3 px-2 py-1" style="background: rgba(0, 220, 130, 0.15); border: 1px solid rgba(0, 220, 130, 0.3); color: var(--neon-mint); font-weight: 800; font-size: 14px;">
+                            INVENTRA
+                        </div>
+                        <span class="text-secondary small fw-bold">SUPPLY CHAIN REPLENISHMENT</span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-1" th:text="${store.storeName}">Inventra Supermarket</h2>
+                    <p class="text-secondary small mb-1">
+                        <i class="bi bi-geo-alt me-1"></i> <span th:text="${store.address}">Shop #4, Gandhi Main Road, Bengaluru</span>
+                    </p>
+                    <p class="text-secondary small mb-0">
+                        <i class="bi bi-telephone me-1"></i> <span th:text="${store.phone}">+91 98765 43210</span> &bull; 
+                        <i class="bi bi-envelope me-1"></i> <span th:text="${store.email}">contact@inventra.store</span> &bull; 
+                        <strong>GSTIN:</strong> <span class="mono fw-bold text-white" th:text="${store.gstin}">29AABCU9603R1Z7</span>
+                    </p>
+                </div>
+
+                <div class="col-sm-5 text-sm-end mt-3 mt-sm-0">
+                    <div class="d-inline-block text-start text-sm-end">
+                        <h4 class="fw-bold text-uppercase tracking-wide mb-1" style="color: var(--neon-mint);">PURCHASE ORDER</h4>
+                        <div class="mono text-white fw-bold fs-6" th:text="${poNumber}">PO-20261112-9842</div>
+                        <div class="small text-secondary mt-1">
+                            <strong>Date:</strong> <span th:text="${poDate}">12 Nov 2026, 11:15 PM</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.4); font-size: 11px;">
+                                <i class="bi bi-check-circle-fill me-1"></i> STATUS: AUTHORIZED ORDER
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendor / Wholesaler Details Box -->
+            <div class="row g-3 py-3 border-bottom" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-bold text-uppercase mb-1">SUPPLIER / WHOLESALE DISTRIBUTOR:</div>
+                    <div class="fw-bold text-white">Primary Wholesale FMCG &amp; Staples Distribution Hub</div>
+                    <div class="text-secondary small">Industrial Area Stage II, Warehouse Complex, Bengaluru</div>
+                    <div class="text-secondary small">Contact: +91 80 4123 5678 &bull; orders@wholesalehub.in</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-bold text-uppercase mb-1">DISPATCH &amp; DELIVERY INSTRUCTIONS:</div>
+                    <div class="text-secondary small">
+                        Deliver to store receiving dock within 48 hours.<br>
+                        Ensure perishable items maintain minimum 90 days validity.<br>
+                        Include physical delivery challan matching this purchase order.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Summary Metric Cards (Visible on screen and print) -->
+            <div class="row g-3 my-2">
+                <div class="col-6 col-md-3">
+                    <div class="metric-pill">
+                        <div class="text-secondary small fw-bold text-uppercase">Items to Reorder</div>
+                        <div class="fs-4 fw-bold text-white mono mt-1" th:text="${totalItemsCount}">2</div>
+                        <div class="text-secondary" style="font-size: 11px;">Low Stock &amp; Expiring</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-pill">
+                        <div class="text-secondary small fw-bold text-uppercase">Total Quantity</div>
+                        <div class="fs-4 fw-bold text-info mono mt-1" th:text="${totalUnitsCount} + ' Units'">93 Units</div>
+                        <div class="text-secondary" style="font-size: 11px;">Target Buffer: 50 units</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-pill">
+                        <div class="text-secondary small fw-bold text-uppercase">Wholesale Est.</div>
+                        <div class="fs-4 fw-bold mono mt-1" style="color: var(--neon-mint);" th:text="${'₹' + #numbers.formatDecimal(subTotalCost, 1, 2)}">₹4,862.00</div>
+                        <div class="text-secondary" style="font-size: 11px;">Before Tax Calculation</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-pill">
+                        <div class="text-secondary small fw-bold text-uppercase">Grand Total Est.</div>
+                        <div class="fs-4 fw-bold text-warning mono mt-1" th:text="${'₹' + #numbers.formatDecimal(grandTotalCost, 1, 2)}">₹5,105.10</div>
+                        <div class="text-secondary" style="font-size: 11px;">Incl. GST (<span th:text="${gstRate}">5.0</span>%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════ REORDER ITEMS TABLE ══════════ -->
+            <div class="table-responsive">
+                <table class="po-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">#</th>
+                            <th>Item Name &amp; SKU</th>
+                            <th>Department / Category</th>
+                            <th class="text-center" style="width: 140px;">Current Stock Left</th>
+                            <th class="text-center" style="width: 160px;">Recommended Reorder Qty</th>
+                            <th class="text-end" style="width: 140px;">Unit Wholesale Cost</th>
+                            <th class="text-end" style="width: 150px;">Estimated Line Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State if no products need reorder -->
+                        <tr th:if="${#lists.isEmpty(reorderItems)}">
+                            <td colspan="7" class="text-center py-5 text-secondary">
+                                <i class="bi bi-check-circle text-success fs-1 d-block mb-2"></i>
+                                <span class="fw-bold fs-6 text-white">All Stock Levels Healthy</span><br>
+                                <span class="small">No products currently meet reorder criteria (stock &le; 5 or expiring within 15 days).</span>
+                            </td>
+                        </tr>
+
+                        <!-- Iterating Reorder Products -->
+                        <tr th:each="item, iterStat : ${reorderItems}">
+                            <td class="text-secondary mono small" th:text="${iterStat.count}">1</td>
+                            <td>
+                                <div class="fw-bold text-white" th:text="${item.name}">Dettol Handwash 200ml</div>
+                                <div class="mono text-secondary small" th:text="${item.sku}">SKU-HND-0711</div>
+                                <div class="small mt-1" style="font-size: 11px; color: #ffb300;" th:text="${item.reason}">Low Stock Level (3 units left)</div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-white px-2 py-1" style="background: #172228; border: 1px solid var(--card-border);" th:text="${item.category}">Groceries</span>
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${item.currentStock == 0}" class="stat-badge text-danger" style="background: rgba(255, 71, 87, 0.15); border: 1px solid rgba(255, 71, 87, 0.4);">
+                                    0 (OUT OF STOCK)
+                                </span>
+                                <span th:if="${item.currentStock > 0 and item.currentStock <= 5}" class="stat-badge text-warning" style="background: rgba(255, 179, 0, 0.15); border: 1px solid rgba(255, 179, 0, 0.4);" th:text="${item.currentStock + ' Left (Low)'}">
+                                    3 Left (Low)
+                                </span>
+                                <span th:if="${item.currentStock > 5}" class="stat-badge text-info" style="background: rgba(0, 180, 255, 0.15); border: 1px solid rgba(0, 180, 255, 0.4);" th:text="${item.currentStock + ' Left'}">
+                                    20 Left
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold fs-6 mono" style="color: var(--neon-mint);" th:text="${item.recommendedQuantity} + ' units'">
+                                    47 units
+                                </span>
+                                <div class="text-secondary small" style="font-size: 10px;">Math.max(0, 50 - stock)</div>
+                            </td>
+                            <td class="text-end mono" th:text="${'₹' + #numbers.formatDecimal(item.unitCost, 1, 2)}">₹78.00</td>
+                            <td class="text-end mono fw-bold text-white" th:text="${'₹' + #numbers.formatDecimal(item.lineCost, 1, 2)}">₹3,666.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Financial Totals Summary Block -->
+            <div class="row justify-content-end mb-4">
+                <div class="col-md-6 col-lg-5">
+                    <div class="p-3 rounded-3" style="background: #172228; border: 1px solid var(--card-border);">
+                        <div class="d-flex justify-content-between py-1 small">
+                            <span class="text-secondary">Subtotal Wholesale Value:</span>
+                            <span class="text-white mono fw-bold" th:text="${'₹' + #numbers.formatDecimal(subTotalCost, 1, 2)}">₹4,862.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-1 small">
+                            <span class="text-secondary">
+                                Estimated GST (<span th:text="${gstRate}">5.0</span>%):
+                            </span>
+                            <span class="text-white mono" th:text="${'₹' + #numbers.formatDecimal(estimatedTax, 1, 2)}">₹243.10</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 mt-2 fs-5 fw-bold border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                            <span class="text-white">Estimated Order Total:</span>
+                            <span style="color: var(--neon-mint);" class="mono" th:text="${'₹' + #numbers.formatDecimal(grandTotalCost, 1, 2)}">₹5,105.10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms & Formal Signatures Block -->
+            <div class="border-top pt-4 mt-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                <div class="row text-secondary small mb-4">
+                    <div class="col-12">
+                        <strong>Terms &amp; Conditions:</strong> This Purchase Order is electronically generated and authorized by store inventory management. Payment terms: 30 days Net from invoice date upon successful delivery and quality audit of received stock.
+                    </div>
+                </div>
+
+                <div class="row pt-3 text-center">
+                    <div class="col-sm-4 mb-3 mb-sm-0">
+                        <div class="pb-4 border-bottom" style="border-color: rgba(255, 255, 255, 0.2) !important;"></div>
+                        <div class="text-white fw-bold small mt-2">Prepared By</div>
+                        <div class="text-secondary" style="font-size: 11px;">Store Inventory Manager</div>
+                    </div>
+                    <div class="col-sm-4 mb-3 mb-sm-0">
+                        <div class="pb-4 border-bottom" style="border-color: rgba(255, 255, 255, 0.2) !important;"></div>
+                        <div class="text-white fw-bold small mt-2">Authorized Signatory</div>
+                        <div class="text-secondary" style="font-size: 11px;" th:text="${store.storeName}">Inventra Supermarket</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pb-4 border-bottom" style="border-color: rgba(255, 255, 255, 0.2) !important;"></div>
+                        <div class="text-white fw-bold small mt-2">Supplier Acknowledgement</div>
+                        <div class="text-secondary" style="font-size: 11px;">Seal &amp; Signature Upon Receipt</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Back to Inventory footer link (No-Print) -->
+        <div class="text-center mt-4 mb-5 no-print">
+            <a href="/products" class="btn-toolbar-nav">
+                <i class="bi bi-arrow-left"></i> Return to Product Master
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

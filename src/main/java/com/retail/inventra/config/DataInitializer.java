@@ -106,7 +106,7 @@ public class DataInitializer {
             }
 
             if (settingRepo.count() == 0) {
-                settingRepo.save(new StoreSetting("Inventra Supermarket", "Shop #4, Gandhi Main Road, Bengaluru", "+91 98765 43210"));
+                settingRepo.save(new StoreSetting("Inventra Supermarket", "Shop #4, Gandhi Main Road, Bengaluru", "+91 98765 43210", "contact@inventra.store", "29AABCU9603R1Z7", 5.0));
             }
 
             // Seed Realistic Past 7 Days Sales for Executive Analytics Charts

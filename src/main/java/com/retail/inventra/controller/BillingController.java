@@ -96,8 +96,11 @@ public class BillingController {
             }
         }
 
-        // 3. Tax calculation: 5% GST (2.5% CGST + 2.5% SGST)
-        double taxAmount = Math.round((subTotal * 0.05) * 100.0) / 100.0;
+        // 3. Store info & Dynamic GST Calculation from database
+        StoreSetting store = settingRepo.findAll().stream().findFirst()
+                .orElse(new StoreSetting("Inventra Supermarket", "Shop #4, Gandhi Main Road, Bengaluru", "+91 98765 43210"));
+        double gstRate = (store.getGstPercentage() != null && store.getGstPercentage() >= 0) ? store.getGstPercentage() : 5.0;
+        double taxAmount = Math.round((subTotal * (gstRate / 100.0)) * 100.0) / 100.0;
         double grandTotal = Math.round((subTotal + taxAmount) * 100.0) / 100.0;
 
         // 4. If payment is UDHAR, record debt on Customer Khata
@@ -110,10 +113,6 @@ public class BillingController {
                 customerRepo.save(customer);
             }
         }
-
-        // 5. Store info
-        StoreSetting store = settingRepo.findAll().stream().findFirst()
-                .orElse(new StoreSetting("Inventra Kirana & Supermarket", "Shop #4, Gandhi Main Road, Bengaluru", "+91 98765 43210"));
 
         // 6. Generate Invoice Number & Bill Timestamp
         String invoiceNumber = "INV-" + (System.currentTimeMillis() % 1000000);
@@ -140,6 +139,7 @@ public class BillingController {
         model.addAttribute("itemCount", cartItems.stream().mapToInt(CartItem::getQuantity).sum());
         model.addAttribute("subTotal", subTotal);
         model.addAttribute("taxAmount", taxAmount);
+        model.addAttribute("gstRate", gstRate);
         model.addAttribute("grandTotal", grandTotal);
         model.addAttribute("paymentType", paymentType);
         model.addAttribute("customer", customer);

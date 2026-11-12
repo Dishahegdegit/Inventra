@@ -199,7 +199,10 @@
                 </div>
                 <div class="text-secondary small" th:text="${store.address}">Shop #4, Gandhi Main Road, Bengaluru</div>
                 <div class="text-secondary small">
-                    <i class="bi bi-telephone me-1"></i><span th:text="${store.phone}">+91 98765 43210</span> &bull; GSTIN: 29AABCU9603R1Z7
+                    <i class="bi bi-telephone me-1"></i><span th:text="${store.phone}">+91 98765 43210</span>
+                    <span th:if="${store.email != null and !store.email.isEmpty()}" th:text="' &bull; ' + ${store.email}"> &bull; store@inventra.retail</span>
+                    <br>
+                    <span>GSTIN: <strong class="text-white" th:text="${store.gstin != null ? store.gstin : '29AABCU9603R1Z7'}">29AABCU9603R1Z7</strong></span>
                 </div>
             </div>
 
@@ -259,11 +262,11 @@
                     <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(subTotal, 1, 2)}">₹290.00</span>
                 </div>
                 <div class="d-flex justify-content-between mb-1">
-                    <span class="text-secondary">CGST (2.5%):</span>
+                    <span class="text-secondary">CGST (<span th:text="${gstRate != null ? #numbers.formatDecimal(gstRate / 2.0, 1, 1) : '2.5'}">2.5</span>%):</span>
                     <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(taxAmount / 2.0, 1, 2)}">₹7.25</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span class="text-secondary">SGST (2.5%):</span>
+                    <span class="text-secondary">SGST (<span th:text="${gstRate != null ? #numbers.formatDecimal(gstRate / 2.0, 1, 1) : '2.5'}">2.5</span>%):</span>
                     <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(taxAmount / 2.0, 1, 2)}">₹7.25</span>
                 </div>
                 <div class="d-flex justify-content-between fs-5 fw-bold pt-2" style="border-top: 1px solid var(--card-border);">

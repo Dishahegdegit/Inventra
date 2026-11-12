@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Profile &amp; GST Settings — Inventra</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+
+    <style>
+        .settings-card {
+            background: #141b1f;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .settings-input {
+            background: #182228 !important;
+            border: 1px solid var(--card-border) !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease;
+        }
+
+        .settings-input:focus {
+            border-color: var(--neon-mint) !important;
+            box-shadow: 0 0 0 3px rgba(0, 220, 130, 0.15) !important;
+            outline: none !important;
+        }
+
+        .thermal-preview-box {
+            background: #0f1418;
+            border: 1px dashed var(--card-border);
+            border-radius: 14px;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace, Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- ══════════ LEFT COLLAPSIBLE SIDEBAR ══════════ -->
+    <aside class="app-sidebar" id="appSidebar">
+        <div>
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
+                <a href="/" class="brand-logo text-decoration-none">
+                    <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
+                </a>
+                <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <a href="/" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/pos" class="sidebar-nav-link">
+                    <i class="bi bi-cart3"></i>
+                    <span class="sidebar-text">POS Terminal</span>
+                </a>
+                <a href="/products" class="sidebar-nav-link">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="sidebar-text">Product Master</span>
+                </a>
+                <a href="/customers" class="sidebar-nav-link">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span class="sidebar-text">Khata Directory</span>
+                </a>
+                <a href="/settings" class="sidebar-nav-link active" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-gear-fill"></i>
+                    <span class="sidebar-text">Store Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer pt-3 border-top" style="border-color: var(--card-border) !important;">
+            <div class="d-flex align-items-center justify-content-between px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 14px; background: #1c272e; color: var(--neon-mint);">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 100px;" sec:authentication="name">Admin</div>
+                        <div class="text-secondary" style="font-size: 10.5px;">Store Owner</div>
+                    </div>
+                </div>
+                <form action="/login?logout" method="post" class="m-0">
+                    <button type="submit" class="sidebar-toggle-btn text-danger p-0 border-0 bg-transparent" title="Logout">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ══════════ MAIN CONTENT AREA ══════════ -->
+    <div class="app-main">
+
+        <!-- Top Header Bar -->
+        <header class="app-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="sidebar-toggle-btn d-lg-none" onclick="toggleSidebarMobile()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="/"><i class="bi bi-house-door"></i> Home</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <span class="active">Store Profile &amp; GST Settings</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill header-store-badge" style="background: rgba(0, 220, 130, 0.12); border: 1px solid rgba(0, 220, 130, 0.3);">
+                    <i class="bi bi-shop" style="color: var(--neon-mint);"></i>
+                    <span class="fw-bold text-white small" id="headerStoreName" th:text="${storeName}">Inventra Supermarket</span>
+                </div>
+                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                    <i class="bi bi-shield-lock-fill text-warning me-1"></i> Admin Privileges Active
+                </span>
+            </div>
+        </header>
+
+        <!-- Settings Content -->
+        <main class="container-fluid px-4 py-4">
+            
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h2 class="fw-bold text-white mb-1">
+                        <i class="bi bi-sliders me-2" style="color: var(--neon-mint);"></i> Store Profile &amp; Tax Configuration
+                    </h2>
+                    <p class="text-secondary small mb-0">Manage business details, legal GSTIN identity, and default POS billing tax rate</p>
+                </div>
+                <a href="/" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Alerts -->
+            <div th:if="${param.success}" class="alert alert-success d-flex align-items-center gap-2 rounded-3 mb-4 shadow-sm" style="background: rgba(0, 220, 130, 0.15); border: 1px solid rgba(0, 220, 130, 0.4); color: #00dc82;">
+                <i class="bi bi-check-circle-fill fs-5"></i>
+                <div>
+                    <strong>Settings Saved!</strong> Store profile, contact identity, and GST rate updated persistently. New POS bills will reflect these parameters immediately.
+                </div>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center gap-2 rounded-3 mb-4 shadow-sm" style="background: rgba(255, 71, 87, 0.15); border: 1px solid rgba(255, 71, 87, 0.4); color: #ff6b81;">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div th:text="${errorMessage}">Validation error occurred.</div>
+            </div>
+
+            <div class="row g-4">
+
+                <!-- Left Form Column -->
+                <div class="col-lg-7 col-xl-8">
+                    <div class="settings-card shadow-lg">
+                        <h5 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-shop text-info"></i> Legal Store Profile
+                        </h5>
+
+                        <form th:action="@{/settings/save}" th:object="${store}" method="post">
+                            <input type="hidden" th:field="*{id}">
+
+                            <!-- Store Name -->
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">REGISTERED STORE / TRADING NAME</label>
+                                <input type="text" th:field="*{storeName}" id="inputStoreName" class="form-control settings-input" placeholder="e.g. Inventra Supermarket" required>
+                                <div class="form-text text-secondary small">Appears prominently at the top of customer receipts and dashboard metrics.</div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">STORE PHYSICAL ADDRESS &amp; PINCODE</label>
+                                <textarea th:field="*{address}" id="inputAddress" rows="2" class="form-control settings-input" placeholder="e.g. Shop #4, Gandhi Main Road, Bengaluru, Karnataka - 560001" required></textarea>
+                            </div>
+
+                            <!-- Phone & Email -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">STORE CONTACT PHONE</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text settings-input text-secondary border-end-0"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" th:field="*{phone}" id="inputPhone" class="form-control settings-input border-start-0" placeholder="+91 98765 43210" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">SUPPORT / BILLING EMAIL</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text settings-input text-secondary border-end-0"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" th:field="*{email}" id="inputEmail" class="form-control settings-input border-start-0" placeholder="contact@inventra.store" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" style="border-color: var(--card-border);">
+
+                            <h5 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-receipt-cutoff" style="color: var(--neon-mint);"></i> GST &amp; Tax Configuration
+                            </h5>
+
+                            <!-- GSTIN & GST % -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-7">
+                                    <label class="form-label text-secondary small fw-bold">GOODS &amp; SERVICES TAX IDENTIFICATION (GSTIN)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text settings-input text-secondary border-end-0"><i class="bi bi-file-earmark-check"></i></span>
+                                        <input type="text" th:field="*{gstin}" id="inputGstin" class="form-control settings-input border-start-0 text-uppercase" placeholder="29AABCU9603R1Z7" required>
+                                    </div>
+                                    <div class="form-text text-secondary small">15-digit alphanumeric state GST number.</div>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label text-secondary small fw-bold">DEFAULT GST RATE (%)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text settings-input text-secondary border-end-0"><i class="bi bi-percent"></i></span>
+                                        <select th:field="*{gstPercentage}" id="inputGstRate" class="form-select settings-input border-start-0 fw-bold" required>
+                                            <option value="0.0">0% (Nil / Exempt)</option>
+                                            <option value="5.0">5% (Essential Goods)</option>
+                                            <option value="12.0">12% (Standard Goods)</option>
+                                            <option value="18.0">18% (Standard / FMCG)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-text text-secondary small">Permitted tax slabs: 0%, 5%, 12%, or 18%.</div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-flex justify-content-end gap-3 pt-2">
+                                <a href="/" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                                <button type="submit" class="btn px-4 rounded-pill fw-bold" style="background: var(--neon-mint); color: #071710; box-shadow: 0 0 15px rgba(0, 220, 130, 0.3);">
+                                    <i class="bi bi-floppy-fill me-1"></i> Save Store Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Live Preview Column -->
+                <div class="col-lg-5 col-xl-4">
+                    <div class="settings-card shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-white mb-0">
+                                <i class="bi bi-eye text-info me-1"></i> Receipt Live Preview
+                            </h6>
+                            <span class="badge" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint);">Auto-Synced</span>
+                        </div>
+                        <p class="text-secondary small mb-3">How your business details and GST appear to customers on printed receipts:</p>
+
+                        <!-- Thermal Receipt Miniature Box -->
+                        <div class="thermal-preview-box">
+                            <div class="text-center mb-3">
+                                <div class="text-white fw-bold fs-6" id="previewStoreName" th:text="${store.storeName}">Inventra Supermarket</div>
+                                <div class="text-secondary small" id="previewAddress" th:text="${store.address}">Shop #4, Gandhi Main Road, Bengaluru</div>
+                                <div class="text-secondary small">
+                                    Phone: <span id="previewPhone" th:text="${store.phone}">+91 98765 43210</span>
+                                </div>
+                                <div class="text-secondary small">
+                                    Email: <span id="previewEmail" th:text="${store.email}">contact@inventra.store</span>
+                                </div>
+                                <div class="text-secondary small mt-1">
+                                    GSTIN: <span class="fw-bold text-info" id="previewGstin" th:text="${store.gstin}">29AABCU9603R1Z7</span>
+                                </div>
+                            </div>
+
+                            <div style="border-top: 1px dashed var(--card-border);" class="my-2"></div>
+
+                            <div class="small">
+                                <div class="d-flex justify-content-between text-secondary">
+                                    <span>Sample Item x1</span>
+                                    <span>₹100.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-secondary">
+                                    <span>Subtotal:</span>
+                                    <span>₹100.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between" style="color: var(--neon-mint);">
+                                    <span>GST (<span id="previewGstRate" th:text="${store.gstPercentage}">5.0</span>%):</span>
+                                    <span>₹<span id="previewGstAmount" th:text="${#numbers.formatDecimal(store.gstPercentage, 1, 2)}">5.00</span></span>
+                                </div>
+                                <div class="d-flex justify-content-between text-white fw-bold pt-1" style="border-top: 1px dashed var(--card-border);">
+                                    <span>TOTAL BILL:</span>
+                                    <span>₹<span id="previewGrandTotal" th:text="${#numbers.formatDecimal(100.0 + store.gstPercentage, 1, 2)}">105.00</span></span>
+                                </div>
+                            </div>
+
+                            <div style="border-top: 1px dashed var(--card-border);" class="my-2"></div>
+                            <div class="text-center text-secondary small" style="font-size: 11px;">
+                                *** Thank You for Visiting! ***
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</div>
+
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('appSidebar');
+        const chevron = document.getElementById('sidebarChevron');
+        sidebar.classList.toggle('collapsed');
+        if (sidebar.classList.contains('collapsed')) {
+            chevron.classList.replace('bi-chevron-bar-left', 'bi-chevron-bar-right');
+        } else {
+            chevron.classList.replace('bi-chevron-bar-right', 'bi-chevron-bar-left');
+        }
+    }
+
+    function toggleSidebarMobile() {
+        const sidebar = document.getElementById('appSidebar');
+        sidebar.classList.toggle('show');
+    }
+
+    // Live preview updates
+    const nameInput = document.getElementById('inputStoreName');
+    const addrInput = document.getElementById('inputAddress');
+    const phoneInput = document.getElementById('inputPhone');
+    const emailInput = document.getElementById('inputEmail');
+    const gstinInput = document.getElementById('inputGstin');
+    const gstRateInput = document.getElementById('inputGstRate');
+
+    function updatePreview() {
+        if (nameInput) document.getElementById('previewStoreName').textContent = nameInput.value || 'Inventra Supermarket';
+        if (addrInput) document.getElementById('previewAddress').textContent = addrInput.value || 'Store Address';
+        if (phoneInput) document.getElementById('previewPhone').textContent = phoneInput.value || '+91 XXXXX XXXXX';
+        if (emailInput) document.getElementById('previewEmail').textContent = emailInput.value || 'contact@store.com';
+        if (gstinInput) document.getElementById('previewGstin').textContent = (gstinInput.value || '29AABCU9603R1Z7').toUpperCase();
+        
+        if (gstRateInput) {
+            const rate = parseFloat(gstRateInput.value) || 0;
+            document.getElementById('previewGstRate').textContent = rate.toFixed(1);
+            document.getElementById('previewGstAmount').textContent = rate.toFixed(2);
+            document.getElementById('previewGrandTotal').textContent = (100 + rate).toFixed(2);
+        }
+    }
+
+    [nameInput, addrInput, phoneInput, emailInput, gstinInput, gstRateInput].forEach(el => {
+        if (el) {
+            el.addEventListener('input', updatePreview);
+            el.addEventListener('change', updatePreview);
+        }
+    });
+</script>
+
+</body>
+</html>

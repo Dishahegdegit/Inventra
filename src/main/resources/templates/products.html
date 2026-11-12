@@ -80,6 +80,10 @@
                     <i class="bi bi-journal-bookmark"></i>
                     <span class="sidebar-text">Khata Directory</span>
                 </a>
+                <a href="/settings" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-gear-fill"></i>
+                    <span class="sidebar-text">Store Settings</span>
+                </a>
             </nav>
         </div>
 
@@ -121,6 +125,10 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill header-store-badge" style="background: rgba(0, 220, 130, 0.12); border: 1px solid rgba(0, 220, 130, 0.3);">
+                    <i class="bi bi-shop" style="color: var(--neon-mint);"></i>
+                    <span class="fw-bold text-white small" id="headerStoreName" th:text="${storeName}">Inventra Supermarket</span>
+                </div>
                 <a href="/products" class="notif-bell-btn text-decoration-none" title="Stock Alerts">
                     <i class="bi bi-bell"></i>
                     <span class="notif-badge-dot">!</span>
@@ -210,6 +218,14 @@
 
                             <a href="/products/export" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: #172228; color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.4);" title="Export Inventory CSV">
                                 <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> 📥 Export Inventory CSV
+                            </a>
+
+                            <a href="/products/reorder-export" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.4);" title="Download Low Stock Supplier Reorder Sheet">
+                                <i class="bi bi-truck me-1"></i> 🚚 Supplier Reorder Sheet
+                            </a>
+
+                            <a href="/inventory/reorder" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: rgba(30, 144, 255, 0.15); color: #60a5fa; border: 1px solid rgba(30, 144, 255, 0.4);" title="View &amp; Print Supplier Purchase Order">
+                                <i class="bi bi-printer-fill me-1"></i> 🖨️ Purchase Order
                             </a>
                         </div>
                     </div>

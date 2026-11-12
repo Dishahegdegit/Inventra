@@ -3,9 +3,11 @@ package com.retail.inventra;
 import com.retail.inventra.model.Customer;
 import com.retail.inventra.model.Product;
 import com.retail.inventra.model.Sale;
+import com.retail.inventra.model.StoreSetting;
 import com.retail.inventra.repository.CustomerRepository;
 import com.retail.inventra.repository.ProductRepository;
 import com.retail.inventra.repository.SaleRepository;
+import com.retail.inventra.repository.StoreSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +29,9 @@ public class HomeController {
 
     @Autowired
     private SaleRepository saleRepo;
+
+    @Autowired
+    private StoreSettingRepository settingRepo;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -97,6 +102,12 @@ public class HomeController {
         // Chart 3: Real Category Breakdown
         model.addAttribute("categoryLabels", categoryCounts.keySet());
         model.addAttribute("categoryData", categoryCounts.values());
+
+        // Store Profile for Header
+        StoreSetting store = settingRepo.findAll().stream().findFirst()
+                .orElse(new StoreSetting("Inventra Supermarket", "Shop #4, Gandhi Main Road, Bengaluru", "+91 98765 43210", "contact@inventra.store", "29AABCU9603R1Z7", 5.0));
+        model.addAttribute("store", store);
+        model.addAttribute("storeName", (store.getStoreName() != null && !store.getStoreName().isBlank()) ? store.getStoreName() : "Inventra Supermarket");
 
         return "index";
     }

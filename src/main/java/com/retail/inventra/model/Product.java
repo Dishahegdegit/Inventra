@@ -51,6 +51,13 @@ public class Product {
         return !isExpired() && expiryDate.isBefore(LocalDate.now().plusDays(30));
     }
 
+    // Helper: Check if product expires within the next 15 days
+    public boolean isExpiringWithin15Days() {
+        if (expiryDate == null) return false;
+        LocalDate today = LocalDate.now();
+        return !expiryDate.isBefore(today) && !expiryDate.isAfter(today.plusDays(15));
+    }
+
     // Helper: Calculate profit margin %
     public int getMarginPercent() {
         if (purchasePrice == null || purchasePrice <= 0 || price == null) return 20;

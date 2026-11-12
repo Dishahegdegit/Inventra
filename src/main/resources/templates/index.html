@@ -73,7 +73,7 @@
             <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
                 <a href="/" class="brand-logo text-decoration-none">
                     <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
-                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5" th:text="${storeName}">inventra</span>
                 </a>
                 <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
                     <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
@@ -97,6 +97,10 @@
                 <a href="/customers" class="sidebar-nav-link">
                     <i class="bi bi-journal-bookmark"></i>
                     <span class="sidebar-text">Khata Directory</span>
+                </a>
+                <a href="/settings" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-gear-fill"></i>
+                    <span class="sidebar-text">Store Settings</span>
                 </a>
             </nav>
         </div>
@@ -139,6 +143,10 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill header-store-badge" style="background: rgba(0, 220, 130, 0.12); border: 1px solid rgba(0, 220, 130, 0.3);">
+                    <i class="bi bi-shop" style="color: var(--neon-mint);"></i>
+                    <span class="fw-bold text-white small" id="headerStoreName" th:text="${storeName}">Inventra Supermarket</span>
+                </div>
                 <a href="/products" class="notif-bell-btn text-decoration-none" title="Stock Alerts">
                     <i class="bi bi-bell"></i>
                     <span class="notif-badge-dot" th:text="${lowStockCount > 0 ? lowStockCount : '!'}">!</span>
@@ -155,6 +163,12 @@
             <!-- Welcome Header -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.3); font-size: 11px;">
+                            <i class="bi bi-shop me-1"></i> <span th:text="${storeName}">Inventra Supermarket</span>
+                        </span>
+                        <span class="text-secondary small fw-bold">&bull; STORE OPERATIONS</span>
+                    </div>
                     <h2 class="fw-bold text-white mb-1">Executive Financial Dashboard</h2>
                     <p class="text-secondary small mb-0">Real-time revenue metrics, debt distribution, and inventory valuation analytics</p>
                 </div>

@@ -47,6 +47,10 @@
                     <i class="bi bi-journal-bookmark"></i>
                     <span class="sidebar-text">Khata Directory</span>
                 </a>
+                <a href="/settings" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-gear-fill"></i>
+                    <span class="sidebar-text">Store Settings</span>
+                </a>
             </nav>
         </div>
 
@@ -88,6 +92,10 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill header-store-badge" style="background: rgba(0, 220, 130, 0.12); border: 1px solid rgba(0, 220, 130, 0.3);">
+                    <i class="bi bi-shop" style="color: var(--neon-mint);"></i>
+                    <span class="fw-bold text-white small" id="headerStoreName" th:text="${storeName}">Inventra Supermarket</span>
+                </div>
                 <a href="/customers/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill" style="background: var(--neon-mint); color: #071710;">
                     <i class="bi bi-person-plus-fill me-1"></i> Register Customer
                 </a>

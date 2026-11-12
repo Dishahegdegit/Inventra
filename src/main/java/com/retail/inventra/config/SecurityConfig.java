@@ -27,7 +27,7 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/h2-console/**").permitAll()
-                .requestMatchers("/products/delete/**").hasRole("ADMIN")
+                .requestMatchers("/products/delete/**", "/settings", "/settings/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
