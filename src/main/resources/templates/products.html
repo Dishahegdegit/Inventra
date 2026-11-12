@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,7 @@
 
             <!-- Central Pill Navigation Tabs -->
             <nav class="nav-pill-group d-none d-md-flex">
-                <a href="/" class="nav-pill-link">
+                <a href="/" class="nav-pill-link" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-grid-1x2"></i> Dashboard
                 </a>
                 <a href="/products" class="nav-pill-link active">
@@ -41,7 +41,7 @@
                 </a>
             </nav>
 
-            <!-- Top Right Action Controls -->
+            <!-- Top Right Action Controls & User Role -->
             <div class="d-flex align-items-center gap-2">
                 <a href="/products/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill d-flex align-items-center gap-2" style="background: var(--neon-mint); color: #0b1013;">
                     <i class="bi bi-plus-lg"></i> Add Product
@@ -49,9 +49,18 @@
                 <button class="top-action-btn" title="Barcode Scanner" onclick="alert('Barcode Scanner active!')">
                     <i class="bi bi-upc-scan text-white"></i> <span class="d-none d-lg-inline ms-1 text-white">Scan</span>
                 </button>
-                <button class="top-action-btn active" title="Grid View" id="btnGridView">
-                    <i class="bi bi-grid-fill"></i>
-                </button>
+
+                <!-- User Role Pill & Logout -->
+                <div class="d-flex align-items-center gap-2 ms-2 ps-2 border-start" style="border-color: var(--card-border) !important;">
+                    <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                        <i class="bi bi-person-fill text-success me-1"></i> <span sec:authentication="name">User</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="top-action-btn text-danger" title="Logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
 
         </div>
@@ -149,7 +158,7 @@
                                 <div class="product-card-top">
                                     <span class="category-tag" th:text="${product.category}">Dairy</span>
                                     
-                                    <div class="dropdown">
+                                    <div class="dropdown" sec:authorize="hasRole('ADMIN')">
                                         <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots"></i>
                                         </button>
@@ -157,7 +166,7 @@
                                             <li>
                                                 <a class="dropdown-item small text-danger" th:href="@{'/products/delete/' + ${product.id}}" 
                                                    onclick="return confirm('Delete this product from catalog?')">
-                                                    <i class="bi bi-trash3 me-2"></i> Delete
+                                                    <i class="bi bi-trash3 me-2"></i> Delete Item
                                                 </a>
                                             </li>
                                         </ul>

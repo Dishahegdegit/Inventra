@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,9 +27,14 @@
                 <a href="/customers" class="nav-pill-link"><i class="bi bi-journal-bookmark"></i> Khata</a>
             </nav>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge rounded-pill px-3 py-2" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.3);">
-                    <i class="bi bi-circle-fill small me-1"></i> System Online
+                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                    <i class="bi bi-shield-lock-fill text-warning me-1"></i> <span sec:authentication="name">Admin</span>
                 </span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="top-action-btn text-danger" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </header>
