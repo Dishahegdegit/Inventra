@@ -2,68 +2,82 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>POS Billing Counter - Inventra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Cashier Terminal - Inventra</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow-sm">
-        <a class="navbar-brand fw-bold fs-4" href="/">🛒 Inventra</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products">📦 Inventory</a></li>
-                <li class="nav-item"><a class="nav-link" href="/customers">📒 Khata</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/pos">🧾 Billing (POS)</a></li>
-            </ul>
+    <!-- Top Navbar -->
+    <header class="inventoory-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo">
+                <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                <span>inventra</span>
+            </a>
+            <nav class="nav-pill-group">
+                <a href="/" class="nav-pill-link"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+                <a href="/products" class="nav-pill-link"><i class="bi bi-bag-check-fill"></i> Inventory</a>
+                <a href="/pos" class="nav-pill-link active"><i class="bi bi-cart3"></i> Sales (POS)</a>
+                <a href="/customers" class="nav-pill-link"><i class="bi bi-journal-bookmark"></i> Khata</a>
+            </nav>
+            <div></div>
         </div>
-    </nav>
+    </header>
 
     <div class="container py-5" style="max-width: 650px;">
-        <div class="card shadow-sm border-0 p-4">
-            <h3 class="fw-bold text-dark mb-1">🧾 Cashier Billing Counter</h3>
-            <p class="text-muted small mb-4">Select items, enter quantity, choose payment method, and complete sale</p>
-
-            <!-- Error Alert -->
-            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>⚠️ Insufficient Stock!</strong> The requested quantity exceeds available stock.
+        <div class="filter-panel p-4 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-white mb-1"><i class="bi bi-receipt-cutoff me-2" style="color: var(--neon-mint);"></i> Cashier Billing Counter</h3>
+                    <p class="text-secondary small mb-0">Select item, adjust quantity, choose payment method, and complete sale</p>
+                </div>
             </div>
 
-            <!-- Checkout Form -->
+            <!-- Error Alert -->
+            <div th:if="${param.error}" class="alert alert-danger py-2 px-3 small border-0 mb-4" role="alert" style="background: rgba(255, 71, 87, 0.2); color: #ff6b81;">
+                <strong>⚠️ Insufficient Stock!</strong> The requested quantity exceeds available inventory.
+            </div>
+
             <form th:action="@{/pos/checkout}" method="post">
-                <!-- Select Product (From Member 2) -->
+                
+                <!-- Product Selection -->
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Select Product</label>
-                    <select name="productId" class="form-select" required>
+                    <label class="form-label text-secondary small fw-bold">SELECT PRODUCT FROM INVENTORY</label>
+                    <select name="productId" class="form-select filter-select" required>
                         <option value="" disabled selected>-- Choose an item in stock --</option>
                         <option th:each="product : ${products}" 
                                 th:value="${product.id}" 
                                 th:text="${product.name + ' — ₹' + product.price + ' (Available: ' + product.stockQuantity + ')'}">
-                            Atta 5kg — ₹250 (Available: 15)
+                            Amul Milk — ₹32.0 (Available: 4)
                         </option>
                     </select>
                 </div>
 
                 <!-- Quantity -->
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Quantity to Purchase</label>
-                    <input type="number" name="quantity" min="1" value="1" class="form-control" required>
+                    <label class="form-label text-secondary small fw-bold">PURCHASE QUANTITY</label>
+                    <input type="number" name="quantity" min="1" value="1" class="inventoory-search ps-3" required>
                 </div>
 
-                <!-- Payment Type Selection -->
+                <!-- Payment Method -->
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Payment Method</label>
-                    <select name="paymentType" id="paymentTypeSelect" class="form-select" onchange="toggleCustomerSelect()" required>
+                    <label class="form-label text-secondary small fw-bold">PAYMENT METHOD</label>
+                    <select name="paymentType" id="paymentTypeSelect" class="form-select filter-select" onchange="toggleCustomerSelect()" required>
                         <option value="CASH">💵 Cash / UPI (Paid Now)</option>
                         <option value="UDHAR">📒 Udhar / Credit (Add to Customer Khata)</option>
                     </select>
                 </div>
 
-                <!-- Select Customer (From Member 3 - Only needed for Udhar) -->
+                <!-- Customer Selection for Udhar -->
                 <div class="mb-4" id="customerSelectBox" style="display: none;">
-                    <label class="form-label fw-bold text-danger">Select Customer for Khata Debt</label>
-                    <select name="customerId" class="form-select border-danger">
+                    <label class="form-label text-danger small fw-bold">SELECT CUSTOMER FOR KHATA DEBT</label>
+                    <select name="customerId" class="form-select filter-select" style="border-color: rgba(255, 71, 87, 0.4) !important;">
                         <option value="" selected>-- Select Registered Customer --</option>
                         <option th:each="customer : ${customers}" 
                                 th:value="${customer.id}" 
@@ -73,12 +87,13 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5">⚡ Complete Sale & Generate Receipt</button>
+                <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
+                    <i class="bi bi-lightning-fill me-1"></i> Complete Sale & Generate Receipt
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Toggle Customer Dropdown when Udhar is selected -->
     <script>
         function toggleCustomerSelect() {
             var paymentType = document.getElementById("paymentTypeSelect").value;
@@ -90,5 +105,6 @@
             }
         }
     </script>
+
 </body>
 </html>

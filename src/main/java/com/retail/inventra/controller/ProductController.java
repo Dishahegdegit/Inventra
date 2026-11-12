@@ -13,7 +13,7 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepo;
 
-    // Display list of all products
+    // Display list of all products in Obsidian & Neon Mint grid view
     @GetMapping("/products")
     public String listProducts(Model model) {
         model.addAttribute("products", productRepo.findAll());
@@ -30,6 +30,9 @@ public class ProductController {
     // Save a new product to database
     @PostMapping("/products/add")
     public String saveProduct(@ModelAttribute Product product) {
+        if (product.getPurchasePrice() == null && product.getPrice() != null) {
+            product.setPurchasePrice(Math.round(product.getPrice() * 0.8 * 100.0) / 100.0);
+        }
         productRepo.save(product);
         return "redirect:/products";
     }

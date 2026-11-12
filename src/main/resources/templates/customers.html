@@ -2,79 +2,89 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Khata - Inventra</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
 </head>
-<body class="bg-light">
+<body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow-sm">
-    <a class="navbar-brand fw-bold fs-4" href="/">🛒 Inventra</a>
-    <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="/products">📦 Inventory</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/customers">📒 Khata</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pos">🧾 Billing (POS)</a></li>
-        </ul>
-    </div>
-</nav>
-
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-1">📒 Customer Credit Ledger (Khata)</h2>
-            <p class="text-muted">Track customer phone numbers, outstanding debt balances, and log cash repayments</p>
+    <!-- Top Navbar -->
+    <header class="inventoory-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo">
+                <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                <span>inventra</span>
+            </a>
+            <nav class="nav-pill-group">
+                <a href="/" class="nav-pill-link"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+                <a href="/products" class="nav-pill-link"><i class="bi bi-bag-check-fill"></i> Inventory</a>
+                <a href="/pos" class="nav-pill-link"><i class="bi bi-cart3"></i> Sales (POS)</a>
+                <a href="/customers" class="nav-pill-link active"><i class="bi bi-journal-bookmark"></i> Khata</a>
+            </nav>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/customers/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
+                    <i class="bi bi-person-plus-fill me-1"></i> Register Customer
+                </a>
+            </div>
         </div>
-        <a href="/customers/add" class="btn btn-success px-4 py-2 fw-bold">👤 Register New Customer</a>
-    </div>
+    </header>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
+    <div class="container-fluid px-4 py-4">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h3 fw-bold text-white mb-1">Customer Credit Ledger (Khata)</h2>
+                <p class="text-secondary small mb-0">Track customer phone numbers, outstanding debt balances, and log cash repayments</p>
+            </div>
+        </div>
+
+        <div class="filter-panel p-0 overflow-hidden">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Customer ID</th>
-                        <th>Name</th>
-                        <th>Phone Number</th>
-                        <th>Current Udhar Balance</th>
-                        <th>Debt Status</th>
-                        <th>Clear / Repay Udhar</th>
-                    </tr>
+                <table class="table mb-0 align-middle" style="color: #cfd8dc;">
+                    <thead style="background: #141b1f;">
+                        <tr>
+                            <th class="py-3 px-4 text-secondary text-uppercase small">ID</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small">Customer Name</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small">Mobile</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small">Udhar Debt Balance</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small">Status</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small text-end">Clear Udhar Payment</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="customer : ${customers}">
-                        <td class="fw-bold text-muted" th:text="${'#C' + customer.id}">#C1</td>
-                        <td class="fw-bold text-dark" th:text="${customer.name}">Ramesh Kumar</td>
-                        <td th:text="${customer.phone}">9876543210</td>
-                        <td>
-                            <!-- Highlight debt in red -->
-                            <span th:class="${customer.creditBalance > 0} ? 'fw-bold text-danger fs-5' : 'fw-bold text-success fs-5'"
-                                  th:text="${'₹' + customer.creditBalance}">₹450.0</span>
-                        </td>
-                        <td>
-                            <span th:if="${customer.creditBalance > 0}" class="badge bg-danger">Pending Udhar</span>
-                            <span th:if="${customer.creditBalance == 0.0}" class="badge bg-success">All Cleared ✅</span>
-                        </td>
-                        <td>
-                            <!-- Inline Repayment Form -->
-                            <form th:action="@{/customers/repay}" method="post" class="d-flex gap-2" style="max-width: 250px;">
-                                <input type="hidden" name="customerId" th:value="${customer.id}">
-                                <input type="number" step="10" name="amountPaid" class="form-control form-control-sm" placeholder="₹ Paid" required>
-                                <button type="submit" class="btn btn-sm btn-outline-success text-nowrap">💰 Pay</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(customers)}">
-                        <td colspan="6" class="text-center py-4 text-muted">No customers registered yet. Click "Register New Customer" above!</td>
-                    </tr>
+                        <tr th:each="customer : ${customers}" style="border-bottom: 1px solid var(--card-border);">
+                            <td class="py-3 px-4 text-secondary" th:text="${'#C' + customer.id}">#C1</td>
+                            <td class="py-3 px-4 fw-bold text-white" th:text="${customer.name}">Ramesh Kumar</td>
+                            <td class="py-3 px-4 text-secondary" th:text="${customer.phone}">9876543210</td>
+                            <td class="py-3 px-4">
+                                <span th:class="${customer.creditBalance > 0} ? 'fw-bold fs-6 text-danger' : 'fw-bold fs-6 text-success'"
+                                      th:text="${'₹' + customer.creditBalance}">₹450.0</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span th:if="${customer.creditBalance > 0}" class="tag-low">Pending Due</span>
+                                <span th:if="${customer.creditBalance == 0.0}" class="margin-pill">All Cleared ✅</span>
+                            </td>
+                            <td class="py-3 px-4 text-end">
+                                <form th:action="@{/customers/repay}" method="post" class="d-inline-flex gap-2 justify-content-end">
+                                    <input type="hidden" name="customerId" th:value="${customer.id}">
+                                    <input type="number" step="10" name="amountPaid" class="inventoory-search py-1 px-3 text-center" style="width: 110px;" placeholder="₹ Amount" required>
+                                    <button type="submit" class="btn btn-sm fw-bold px-3 rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
+                                        Pay
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
-</div>
 
 </body>
 </html>
