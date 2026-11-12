@@ -1,6 +1,8 @@
 package com.retail.inventra.model;
 
 import jakarta.persistence.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Entity
 public class Customer {
@@ -19,6 +21,27 @@ public class Customer {
         this.name = name;
         this.phone = phone;
         this.creditBalance = (creditBalance != null) ? creditBalance : 0.0;
+    }
+
+    // Helper: Generate 1-Click WhatsApp Debt Collection URL
+    public String getWhatsAppReminderUrl() {
+        if (phone == null || creditBalance == null || creditBalance <= 0) {
+            return "#";
+        }
+        String cleanPhone = phone.replaceAll("[^0-9]", "");
+        if (cleanPhone.length() == 10) {
+            cleanPhone = "91" + cleanPhone;
+        }
+        String message = String.format(
+            "Namaste %s, this is a gentle reminder from Inventra Store. Your pending Khata balance is ₹%.2f. Kindly settle it at your earliest convenience. Thank you!",
+            (name != null ? name : "Customer"),
+            creditBalance
+        );
+        try {
+            return "https://api.whatsapp.com/send?phone=" + cleanPhone + "&text=" + URLEncoder.encode(message, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return "https://api.whatsapp.com/send?phone=" + cleanPhone;
+        }
     }
 
     // Getters and Setters

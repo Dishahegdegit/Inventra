@@ -3,312 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products & Inventory - Inventra</title>
+    <title>Product Master — Inventra</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Custom Obsidian & Neon Mint Theme -->
+    <!-- Custom Theme -->
     <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+
+    <style>
+        .view-toggle-group {
+            background: #141c22;
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 3px;
+            display: inline-flex;
+            gap: 2px;
+        }
+        .view-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-btn:hover {
+            color: #ffffff;
+        }
+        .view-btn.active {
+            background: var(--neon-mint);
+            color: #071710;
+            box-shadow: 0 0 12px rgba(0, 220, 130, 0.35);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ================== TOP PILL NAVBAR ================== -->
-    <header class="inventoory-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            
-            <!-- Brand Logo -->
-            <a href="/" class="brand-logo">
-                <div class="brand-icon">
-                    <i class="bi bi-box-seam-fill"></i>
-                </div>
-                <span>inventra</span>
-            </a>
+<div class="app-layout">
 
-            <!-- Central Pill Navigation Tabs -->
-            <nav class="nav-pill-group d-none d-md-flex">
-                <a href="/" class="nav-pill-link" sec:authorize="hasRole('ADMIN')">
-                    <i class="bi bi-grid-1x2"></i> Dashboard
+    <!-- ══════════ LEFT COLLAPSIBLE SIDEBAR ══════════ -->
+    <aside class="app-sidebar" id="appSidebar">
+        <div>
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
+                <a href="/" class="brand-logo text-decoration-none">
+                    <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
                 </a>
-                <a href="/products" class="nav-pill-link active">
-                    <i class="bi bi-bag-check-fill"></i> Inventory
+                <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <a href="/" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span class="sidebar-text">Dashboard</span>
                 </a>
-                <a href="/pos" class="nav-pill-link">
-                    <i class="bi bi-cart3"></i> Sales (POS)
+                <a href="/pos" class="sidebar-nav-link">
+                    <i class="bi bi-cart3"></i>
+                    <span class="sidebar-text">POS Terminal</span>
                 </a>
-                <a href="/customers" class="nav-pill-link">
-                    <i class="bi bi-journal-bookmark"></i> Khata
+                <a href="/products" class="sidebar-nav-link active">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="sidebar-text">Product Master</span>
+                </a>
+                <a href="/customers" class="sidebar-nav-link">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span class="sidebar-text">Khata Directory</span>
                 </a>
             </nav>
-
-            <!-- Top Right Action Controls & User Role -->
-            <div class="d-flex align-items-center gap-2">
-                <a href="/products/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill d-flex align-items-center gap-2" style="background: var(--neon-mint); color: #0b1013;">
-                    <i class="bi bi-plus-lg"></i> Add Product
-                </a>
-                <button class="top-action-btn" title="Barcode Scanner" onclick="alert('Barcode Scanner active!')">
-                    <i class="bi bi-upc-scan text-white"></i> <span class="d-none d-lg-inline ms-1 text-white">Scan</span>
-                </button>
-
-                <!-- User Role Pill & Logout -->
-                <div class="d-flex align-items-center gap-2 ms-2 ps-2 border-start" style="border-color: var(--card-border) !important;">
-                    <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
-                        <i class="bi bi-person-fill text-success me-1"></i> <span sec:authentication="name">User</span>
-                    </span>
-                    <form th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="top-action-btn text-danger" title="Logout">
-                            <i class="bi bi-box-arrow-right"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
         </div>
-    </header>
 
-    <!-- ================== MAIN CONTENT LAYOUT ================== -->
-    <div class="container-fluid px-4 py-4">
-        <div class="row g-4">
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer pt-3 border-top" style="border-color: var(--card-border) !important;">
+            <div class="d-flex align-items-center justify-content-between px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 14px; background: #1c272e; color: var(--neon-mint);">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 100px;" sec:authentication="name">User</div>
+                        <div class="text-secondary" style="font-size: 10.5px;">Active Terminal</div>
+                    </div>
+                </div>
+                <form action="/login?logout" method="post" class="m-0">
+                    <button type="submit" class="sidebar-toggle-btn text-danger p-0 border-0 bg-transparent" title="Logout">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
 
-            <!-- ---------- LEFT FILTER SIDEBAR ---------- -->
-            <div class="col-lg-3 col-xl-2">
-                <div class="filter-panel">
-                    
-                    <!-- Section 1: Product Status -->
-                    <div class="filter-section-title">Product Status</div>
-                    
-                    <a href="javascript:void(0)" class="filter-badge-btn active filter-status" data-filter="all">
-                        <span>All Products</span>
-                        <span class="filter-count-badge" th:text="${#lists.size(products)}">8</span>
-                    </a>
+    <!-- ══════════ MAIN CONTENT AREA ══════════ -->
+    <div class="app-main">
 
-                    <a href="javascript:void(0)" class="filter-badge-btn filter-status" data-filter="low-stock">
-                        <span>Low Stock</span>
-                        <span class="filter-count-badge text-danger" style="background: rgba(255, 71, 87, 0.2);">! Low</span>
-                    </a>
-
-                    <a href="javascript:void(0)" class="filter-badge-btn filter-status" data-filter="expiring">
-                        <span>Expiring Soon</span>
-                        <span class="filter-count-badge text-warning" style="background: rgba(255, 165, 2, 0.2);">! Exp</span>
-                    </a>
-
-                    <hr style="border-color: var(--card-border); margin: 18px 0;">
-
-                    <!-- Section 2: Department / Category -->
-                    <div class="filter-section-title">Category</div>
-                    <select class="form-select filter-select mb-3" id="categoryFilter">
-                        <option value="ALL">All Categories</option>
-                        <option value="Dairy">Dairy & Cold</option>
-                        <option value="Grains & Flour">Grains & Flour</option>
-                        <option value="Snacks">Snacks & Confectionery</option>
-                        <option value="Cooking & Oils">Cooking & Oils</option>
-                        <option value="Beverages">Beverages & Coffee</option>
-                        <option value="Household">Household & Hygiene</option>
-                    </select>
-
-                    <hr style="border-color: var(--card-border); margin: 18px 0;">
-
-                    <!-- Section 3: Sort Options -->
-                    <div class="filter-section-title">Sort By</div>
-                    <select class="form-select filter-select mb-3" id="sortFilter">
-                        <option value="name">Alphabetical: A-Z</option>
-                        <option value="price-asc">Price: Low to High</option>
-                        <option value="price-desc">Price: High to Low</option>
-                        <option value="stock-asc">Stock: Low to High</option>
-                    </select>
-
+        <!-- Top Header Bar -->
+        <header class="app-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="sidebar-toggle-btn d-lg-none" onclick="toggleSidebarMobile()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="/"><i class="bi bi-house-door"></i> Home</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <span class="active">Product Master</span>
                 </div>
             </div>
 
-            <!-- ---------- RIGHT PRODUCT SHOWCASE GRID ---------- -->
-            <div class="col-lg-9 col-xl-10">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/products" class="notif-bell-btn text-decoration-none" title="Stock Alerts">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-badge-dot">!</span>
+                </a>
+                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                    <i class="bi bi-person-badge-fill text-info me-1"></i> <span sec:authentication="name">User</span>
+                </span>
+            </div>
+        </header>
 
-                <!-- Title & Search Bar Row -->
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                    <div class="d-flex align-items-baseline gap-3">
-                        <h2 class="h3 fw-bold text-white mb-0">Product</h2>
-                        <span class="text-secondary small">
-                            <span class="text-white fw-bold" th:text="${#lists.size(products)}">8</span> total products in catalog
-                        </span>
-                    </div>
+        <!-- Product Inventory Content -->
+        <main class="container-fluid px-4 py-4">
+            <div class="row g-4">
 
-                    <!-- Search Input -->
-                    <div class="position-relative" style="min-width: 320px; max-width: 450px; flex-grow: 1;">
-                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                        <input type="text" class="inventoory-search" id="productSearch" placeholder="Search product name, category, or SKU...">
+                <!-- Filter Sidebar Column -->
+                <div class="col-lg-3 col-xl-2">
+                    <div class="filter-panel">
+                        <div class="filter-section-title">Product Status</div>
+                        
+                        <a href="javascript:void(0)" class="filter-badge-btn active filter-status" data-filter="all">
+                            <span>All Products</span>
+                            <span class="filter-count-badge" th:text="${#lists.size(products)}">8</span>
+                        </a>
+
+                        <a href="javascript:void(0)" class="filter-badge-btn filter-status" data-filter="low-stock">
+                            <span>Low Stock</span>
+                            <span class="filter-count-badge text-danger" style="background: rgba(255, 71, 87, 0.2);">! Low</span>
+                        </a>
+
+                        <a href="javascript:void(0)" class="filter-badge-btn filter-status" data-filter="expiring">
+                            <span>Expiring Soon</span>
+                            <span class="filter-count-badge text-warning" style="background: rgba(255, 165, 2, 0.2);">Near</span>
+                        </a>
+
+                        <div class="filter-section-title mt-4">Category Shelves</div>
+                        <select class="form-select filter-select mb-3" id="categoryFilter" onchange="applyFilters()">
+                            <option value="all">All Departments</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Staples">Staples</option>
+                            <option value="Dairy &amp; Bakery">Dairy &amp; Bakery</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Snacks &amp; Confectionery">Snacks &amp; Sweets</option>
+                        </select>
+
+                        <div class="filter-section-title mt-4">Sort Products</div>
+                        <select class="form-select filter-select" id="sortFilter" onchange="sortItems()">
+                            <option value="name-asc">Alphabetical: A-Z</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="stock-asc">Stock: Lowest First</option>
+                        </select>
+
+                        <a href="/products/add" class="btn w-100 mt-4 py-2 rounded-pill fw-bold" style="background: var(--neon-mint); color: #0b1013;">
+                            <i class="bi bi-plus-lg me-1"></i> Add Product
+                        </a>
                     </div>
                 </div>
 
-                <!-- Products Grid -->
-                <div class="row g-3" id="productsGridContainer">
+                <!-- Products Display Column (Dual View: Grid & Table) -->
+                <div class="col-lg-9 col-xl-10">
                     
-                    <!-- Single Product Card Loop -->
-                    <div class="col-sm-6 col-md-4 col-xl-3 product-card-wrapper" 
-                         th:each="product : ${products}"
-                         th:data-name="${#strings.toLowerCase(product.name)}"
-                         th:data-category="${product.category}"
-                         th:data-price="${product.price}"
-                         th:data-stock="${product.stockQuantity}"
-                         th:data-lowstock="${product.stockQuantity < 5}"
-                         th:data-expiring="${product.isExpiringSoon() or product.isExpired()}">
-                        
-                        <div class="product-card h-100">
-                            <div>
-                                <!-- Top Row: Category Tag & Three Dots Menu -->
-                                <div class="product-card-top">
-                                    <span class="category-tag" th:text="${product.category}">Dairy</span>
-                                    
-                                    <div class="dropdown" sec:authorize="hasRole('ADMIN')">
-                                        <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" style="background: #172025; border: 1px solid var(--card-border);">
-                                            <li>
-                                                <a class="dropdown-item small text-danger" th:href="@{'/products/delete/' + ${product.id}}" 
-                                                   onclick="return confirm('Delete this product from catalog?')">
-                                                    <i class="bi bi-trash3 me-2"></i> Delete Item
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                    <!-- Search & View Toggle Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1" style="max-width: 480px;">
+                            <div class="position-relative w-100">
+                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                                <input type="text" id="searchInput" onkeyup="applyFilters()" class="inventoory-search" placeholder="Search by name, SKU, or department...">
+                            </div>
+                        </div>
 
-                                <!-- White Image Canvas Box (From Reference Screenshot!) -->
-                                <div class="product-image-box">
-                                    <img th:src="${product.getDisplayImage()}" th:alt="${product.name}" loading="lazy">
-                                </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-secondary small me-1"><span id="visibleCount" th:text="${#lists.size(products)}">8</span> items</span>
 
-                                <!-- Product Title & Department Subtitle -->
-                                <div class="product-title" th:text="${product.name}" th:title="${product.name}">Amul Taaza Milk 500ml</div>
-                                <div class="product-department" th:text="${product.getDisplaySku() + ' • ' + product.category}">SKU-MLK-0012 • Dairy</div>
-
-                                <!-- Stock Status Indicator -->
-                                <div class="product-stock-row">
-                                    <i class="bi bi-box-seam text-secondary"></i>
-                                    <span>Stock: <strong class="text-white" th:text="${product.stockQuantity}">12</strong> in stock</span>
-                                    
-                                    <!-- Low Stock Badge (Pink/Red Tag from Screenshot) -->
-                                    <span th:if="${product.stockQuantity < 5}" class="tag-low">| low</span>
-
-                                    <!-- Expiring Soon Badge -->
-                                    <span th:if="${product.isExpiringSoon()}" class="tag-expiring">| exp</span>
-                                    <span th:if="${product.isExpired()}" class="tag-low">| expired</span>
-                                </div>
+                            <!-- 1-Click Dual-View Toggle (Pillar 3 Complete!) -->
+                            <div class="view-toggle-group">
+                                <button type="button" class="view-btn active" id="btnViewGrid" onclick="switchView('grid')" title="Visual Card Grid">
+                                    <i class="bi bi-grid-fill"></i> Grid
+                                </button>
+                                <button type="button" class="view-btn" id="btnViewTable" onclick="switchView('table')" title="Stock Audit Table">
+                                    <i class="bi bi-list-ul"></i> Table
+                                </button>
                             </div>
 
-                            <!-- Pricing Row (Retail vs Wholesale / Margin) -->
-                            <div class="price-divider">
-                                <div>
-                                    <div class="price-label">Retail Price</div>
-                                    <div class="price-val-retail" th:text="${'₹' + product.price}">₹32.0</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="price-label">Cost</div>
-                                    <div class="price-val-wholesale">
-                                        <span th:text="${product.purchasePrice != null ? '₹' + product.purchasePrice : '₹' + (product.price * 0.8)}">₹26.0</span>
-                                        <span class="margin-pill ms-1" th:text="${'+' + product.getMarginPercent() + '%'}">+23%</span>
-                                    </div>
-                                </div>
-                            </div>
-
+                            <a href="/pos" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.3);">
+                                <i class="bi bi-cart3 me-1"></i> POS Counter
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Empty State -->
-                    <div class="col-12 text-center py-5" id="noProductsFound" style="display: none;">
-                        <div class="fs-1 text-muted mb-2">🔍</div>
-                        <h5 class="text-white">No matching products found</h5>
-                        <p class="text-secondary small">Try adjusting your search query or filter tags</p>
+                    <!-- VIEW 1: Visual Cards Grid -->
+                    <div id="productGridView">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3" id="productGrid">
+                            <div class="col product-item-card" 
+                                 th:each="product : ${products}" 
+                                 th:attr="data-name=${product.name}, data-category=${product.category}, data-price=${product.price}, data-stock=${product.stockQuantity}, data-expiring=${product.isExpiringSoon()}, data-lowstock=${product.stockQuantity <= 5}">
+                                
+                                <div class="product-card h-100">
+                                    <div>
+                                        <div class="product-card-top">
+                                            <span class="category-tag" th:text="${product.category}">Groceries</span>
+                                            <div class="dropdown">
+                                                <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="background: #141c22; border: 1px solid var(--card-border);">
+                                                    <li>
+                                                        <a class="dropdown-item rounded-2 py-2 text-white small" th:href="@{'/pos?productId=' + ${product.id}}">
+                                                            <i class="bi bi-cart-plus text-success me-2"></i> Bill at POS
+                                                        </a>
+                                                    </li>
+                                                    <li sec:authorize="hasRole('ADMIN')">
+                                                        <a class="dropdown-item rounded-2 py-2 text-danger small" 
+                                                           th:href="@{'/products/delete/' + ${product.id}}" 
+                                                           onclick="return confirm('Are you sure you want to delete this product?');">
+                                                            <i class="bi bi-trash3 text-danger me-2"></i> Delete Product
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="product-image-box">
+                                            <img th:src="${product.displayImage}" th:alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80'">
+                                        </div>
+
+                                        <div class="product-title" th:text="${product.name}">Fortune Sunlite Oil</div>
+                                        <div class="product-department" th:text="${product.displaySku}">SKU-GRO-0001</div>
+
+                                        <div class="product-stock-row">
+                                            <i class="bi bi-box-seam"></i>
+                                            <span><strong th:text="${product.stockQuantity}">48</strong> in stock</span>
+                                            <span th:if="${product.stockQuantity <= 5}" class="tag-low">low</span>
+                                            <span th:if="${product.isExpiringSoon()}" class="tag-expiring">expiring</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="price-divider">
+                                        <div>
+                                            <div class="price-label">Retail Price</div>
+                                            <div class="price-val-retail" th:text="${'₹' + #numbers.formatDecimal(product.price, 1, 2)}">₹145.00</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="margin-pill" th:text="${'+' + product.getMarginPercent() + '% margin'}">+21%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 2: Audit Table View -->
+                    <div id="productTableView" style="display: none;">
+                        <div class="filter-panel p-0 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle" style="color: #cfd8dc;">
+                                    <thead style="background: #141b1f;">
+                                        <tr>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Product</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">SKU</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Department</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Stock</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Cost</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Selling</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Margin</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small">Expiry</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productTableBody">
+                                        <tr th:each="product : ${products}" 
+                                            class="product-item-row" 
+                                            th:attr="data-name=${product.name}, data-category=${product.category}, data-price=${product.price}, data-stock=${product.stockQuantity}, data-expiring=${product.isExpiringSoon()}, data-lowstock=${product.stockQuantity <= 5}"
+                                            style="border-bottom: 1px solid var(--card-border);">
+                                            
+                                            <td class="py-3 px-3">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img th:src="${product.displayImage}" alt="Product" style="width: 36px; height: 36px; object-fit: cover; border-radius: 8px; background: #fff;" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=100&auto=format&fit=crop&q=80'">
+                                                    <div class="fw-bold text-white small" th:text="${product.name}">Fortune Oil</div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-3 text-secondary small" th:text="${product.displaySku}">SKU-GRO-001</td>
+                                            <td class="py-3 px-3">
+                                                <span class="badge" style="background: #1c272e; color: #a4b0be;" th:text="${product.category}">Groceries</span>
+                                            </td>
+                                            <td class="py-3 px-3">
+                                                <span th:class="${product.stockQuantity <= 5 ? 'fw-bold text-danger' : 'fw-bold text-white'}" th:text="${product.stockQuantity + ' in stock'}">48 in stock</span>
+                                                <span th:if="${product.stockQuantity <= 5}" class="tag-low ms-1">Low</span>
+                                            </td>
+                                            <td class="py-3 px-3 text-secondary small" th:text="${product.purchasePrice != null ? '₹' + #numbers.formatDecimal(product.purchasePrice, 1, 2) : '—'}">₹116.00</td>
+                                            <td class="py-3 px-3 fw-bold text-white" th:text="${'₹' + #numbers.formatDecimal(product.price, 1, 2)}">₹145.00</td>
+                                            <td class="py-3 px-3">
+                                                <span class="margin-pill" th:text="${'+' + product.getMarginPercent() + '%'}">+21%</span>
+                                            </td>
+                                            <td class="py-3 px-3">
+                                                <span th:if="${product.isExpired()}" class="tag-low">Expired</span>
+                                                <span th:if="${!product.isExpired() && product.isExpiringSoon()}" class="tag-expiring">Expiring Soon</span>
+                                                <span th:if="${!product.isExpired() && !product.isExpiringSoon()}" class="text-secondary small" th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd MMM yyyy') : 'No Expiry'}">15 Dec 2026</span>
+                                            </td>
+                                            <td class="py-3 px-3 text-end">
+                                                <div class="d-inline-flex gap-2">
+                                                    <a th:href="@{'/pos?productId=' + ${product.id}}" class="btn btn-sm px-2 py-1 rounded-pill fw-bold" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); font-size: 11px;" title="Bill at POS">
+                                                        <i class="bi bi-cart-plus"></i> Bill
+                                                    </a>
+                                                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/products/delete/' + ${product.id}}" onclick="return confirm('Delete this product?');" class="btn btn-sm px-2 py-1 rounded-pill text-danger" style="background: rgba(255, 71, 87, 0.15); font-size: 11px;" title="Delete">
+                                                        <i class="bi bi-trash3"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
-
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 
-    <!-- Client-Side Instant Filter Engine -->
-    <script>
-        const searchInput = document.getElementById('productSearch');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const sortFilter = document.getElementById('sortFilter');
-        const statusButtons = document.querySelectorAll('.filter-status');
-        const cardWrappers = Array.from(document.querySelectorAll('.product-card-wrapper'));
-        const noProductsMsg = document.getElementById('noProductsFound');
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        let currentStatus = 'all';
+<!-- Dual View, Filtering & Sidebar JS -->
+<script>
+    let currentStatus = 'all';
 
-        // 1. Status Filter Buttons
-        statusButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                statusButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentStatus = btn.getAttribute('data-filter');
-                applyFilters();
-            });
+    // 1-Click Dual-View Switcher Logic
+    function switchView(view) {
+        const gridView = document.getElementById('productGridView');
+        const tableView = document.getElementById('productTableView');
+        const btnGrid = document.getElementById('btnViewGrid');
+        const btnTable = document.getElementById('btnViewTable');
+
+        if (view === 'table') {
+            gridView.style.display = 'none';
+            tableView.style.display = 'block';
+            btnTable.classList.add('active');
+            btnGrid.classList.remove('active');
+            localStorage.setItem('inventra_product_view', 'table');
+        } else {
+            gridView.style.display = 'block';
+            tableView.style.display = 'none';
+            btnGrid.classList.add('active');
+            btnTable.classList.remove('active');
+            localStorage.setItem('inventra_product_view', 'grid');
+        }
+    }
+
+    // Status Filter Badges
+    document.querySelectorAll('.filter-status').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentStatus = this.getAttribute('data-filter');
+            applyFilters();
+        });
+    });
+
+    // Unified Filter (Works across both Card Grid & Audit Table simultaneously)
+    function applyFilters() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const selectedCategory = document.getElementById('categoryFilter').value;
+        const cards = document.querySelectorAll('.product-item-card');
+        const rows = document.querySelectorAll('.product-item-row');
+        let visibleCount = 0;
+
+        function checkMatch(el) {
+            const name = el.getAttribute('data-name').toLowerCase();
+            const category = el.getAttribute('data-category');
+            const isLowStock = el.getAttribute('data-lowstock') === 'true';
+            const isExpiring = el.getAttribute('data-expiring') === 'true';
+
+            let matchesSearch = name.includes(query) || category.toLowerCase().includes(query);
+            let matchesCategory = (selectedCategory === 'all' || category === selectedCategory);
+            let matchesStatus = true;
+
+            if (currentStatus === 'low-stock') matchesStatus = isLowStock;
+            else if (currentStatus === 'expiring') matchesStatus = isExpiring;
+
+            return matchesSearch && matchesCategory && matchesStatus;
+        }
+
+        cards.forEach(card => {
+            if (checkMatch(card)) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
 
-        // 2. Search & Category Filters
-        searchInput.addEventListener('input', applyFilters);
-        categoryFilter.addEventListener('change', applyFilters);
-        sortFilter.addEventListener('change', applySort);
+        rows.forEach(row => {
+            if (checkMatch(row)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
 
-        function applyFilters() {
-            const query = searchInput.value.toLowerCase().trim();
-            const category = categoryFilter.value;
-            let visibleCount = 0;
+        document.getElementById('visibleCount').innerText = visibleCount;
+    }
 
-            cardWrappers.forEach(card => {
-                const name = card.getAttribute('data-name');
-                const cat = card.getAttribute('data-category');
-                const isLow = card.getAttribute('data-lowstock') === 'true';
-                const isExp = card.getAttribute('data-expiring') === 'true';
+    // Unified Sort (Sorts both Card Grid & Table View)
+    function sortItems() {
+        const sortType = document.getElementById('sortFilter').value;
+        const grid = document.getElementById('productGrid');
+        const tbody = document.getElementById('productTableBody');
 
-                // Check text query
-                const matchesSearch = !query || name.includes(query) || cat.toLowerCase().includes(query);
+        const cards = Array.from(grid.getElementsByClassName('product-item-card'));
+        const rows = Array.from(tbody.getElementsByClassName('product-item-row'));
 
-                // Check category
-                const matchesCat = (category === 'ALL') || (cat === category);
-
-                // Check status
-                let matchesStatus = true;
-                if (currentStatus === 'low-stock') matchesStatus = isLow;
-                if (currentStatus === 'expiring') matchesStatus = isExp;
-
-                if (matchesSearch && matchesCat && matchesStatus) {
-                    card.style.display = '';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            noProductsMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+        function comparator(a, b) {
+            if (sortType === 'name-asc') {
+                return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+            } else if (sortType === 'price-asc') {
+                return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+            } else if (sortType === 'price-desc') {
+                return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+            } else if (sortType === 'stock-asc') {
+                return parseInt(a.getAttribute('data-stock')) - parseInt(b.getAttribute('data-stock'));
+            }
+            return 0;
         }
 
-        // 3. Sorting
-        function applySort() {
-            const criteria = sortFilter.value;
-            const container = document.getElementById('productsGridContainer');
+        cards.sort(comparator);
+        rows.sort(comparator);
 
-            cardWrappers.sort((a, b) => {
-                if (criteria === 'name') {
-                    return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
-                } else if (criteria === 'price-asc') {
-                    return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
-                } else if (criteria === 'price-desc') {
-                    return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
-                } else if (criteria === 'stock-asc') {
-                    return parseInt(a.getAttribute('data-stock')) - parseInt(b.getAttribute('data-stock'));
-                }
-                return 0;
-            });
+        cards.forEach(card => grid.appendChild(card));
+        rows.forEach(row => tbody.appendChild(row));
+    }
 
-            cardWrappers.forEach(card => container.appendChild(card));
+    // Sidebar Toggle
+    function toggleSidebar() {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        localStorage.setItem('inventra_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        const icon = document.getElementById('sidebarChevron');
+        if (icon) {
+            icon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
         }
-    </script>
+    }
+    function toggleSidebarMobile() {
+        document.body.classList.toggle('sidebar-open');
+    }
+
+    // Init View Preferences on Load
+    (function() {
+        if (localStorage.getItem('inventra_sidebar_collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+            const icon = document.getElementById('sidebarChevron');
+            if (icon) icon.className = 'bi bi-chevron-bar-right';
+        }
+
+        if (localStorage.getItem('inventra_product_view') === 'table') {
+            switchView('table');
+        }
+    })();
+</script>
+
 </body>
 </html>

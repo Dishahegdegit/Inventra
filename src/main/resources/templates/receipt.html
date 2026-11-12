@@ -2,87 +2,322 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Customer Receipt - Inventra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Receipt ' + ${invoiceNumber} + ' — Inventra'">Customer Receipt — Inventra</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Plus Jakarta Sans Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+
     <style>
-        /* Thermal Receipt Styling */
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
+        body {
+            background: #0a0e11;
+            color: #edf2f7;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
         }
+
+        .receipt-container {
+            max-width: 520px;
+            margin: 30px auto;
+        }
+
         .receipt-card {
-            max-width: 420px;
-            margin: auto;
+            background: #11171d;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        /* Jagged Thermal Edge Top/Bottom simulation */
+        .receipt-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-mint) 0%, #1e90ff 100%);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .receipt-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .dashed-divider {
+            border: none;
+            border-top: 1px dashed rgba(255, 255, 255, 0.15);
+            margin: 16px 0;
+        }
+
+        .upi-qr-card {
             background: #ffffff;
-            border: 1px dashed #999;
-            padding: 24px;
-            font-family: 'Courier New', Courier, monospace;
+            border-radius: 14px;
+            padding: 14px;
+            display: inline-block;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-bar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            background: #162029;
+            border: 1px solid var(--card-border);
+            color: #ffffff;
+            border-radius: 30px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-back:hover {
+            border-color: var(--neon-mint);
+            color: var(--neon-mint);
+            background: #1c2a36;
+        }
+
+        .btn-print {
+            background: var(--neon-mint);
+            color: #071710;
+            border: none;
+            border-radius: 30px;
+            padding: 9px 22px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(0, 220, 130, 0.3);
+        }
+        .btn-print:hover {
+            background: #25e595;
+            transform: translateY(-1px);
+        }
+
+        /* Print Media Styles (Prints cleanly on white paper) */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .receipt-container {
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .receipt-card {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px dashed #000000 !important;
+                box-shadow: none !important;
+                padding: 16px !important;
+            }
+            .receipt-card::before { display: none; }
+            .text-white, .receipt-mono, h4, span, div, td, th {
+                color: #000000 !important;
+            }
+            .text-secondary {
+                color: #555555 !important;
+            }
+            .dashed-divider {
+                border-top: 1px dashed #000000 !important;
+            }
+            .upi-qr-card {
+                box-shadow: none !important;
+                border: 1px solid #000000;
+            }
+            .badge-optimal-custom, .badge-udhar-custom {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                background: transparent !important;
+            }
+        }
+
+        .badge-optimal-custom {
+            background: rgba(0, 220, 130, 0.12);
+            color: var(--neon-mint);
+            border: 1px solid rgba(0, 220, 130, 0.3);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-udhar-custom {
+            background: rgba(255, 179, 0, 0.12);
+            color: #ffb300;
+            border: 1px solid rgba(255, 179, 0, 0.3);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
         }
     </style>
 </head>
-<body class="bg-light py-4">
-    <!-- Action Bar (Hidden when printing) -->
-    <div class="text-center mb-4 no-print">
-        <button onclick="window.print()" class="btn btn-primary btn-lg px-4 shadow">🖨️ Print Receipt</button>
-        <a href="/pos" class="btn btn-outline-secondary btn-lg ms-2">➕ New Bill</a>
+<body class="py-4">
+
+    <div class="receipt-container">
+
+        <!-- Top Navigation Bar with Back & Print Buttons (Hidden during printing) -->
+        <div class="action-bar-top no-print">
+            <a href="/pos" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back to POS Terminal
+            </a>
+            <button onclick="window.print()" class="btn-print">
+                <i class="bi bi-printer-fill"></i> Print Bill
+            </button>
+        </div>
+
+        <!-- Receipt Card (Obsidian & Neon Mint Themed) -->
+        <div class="receipt-card">
+
+            <!-- Store Header -->
+            <div class="text-center mb-3">
+                <div class="d-inline-flex align-items-center gap-2 mb-1">
+                    <div class="brand-icon" style="width: 32px; height: 32px; font-size: 16px;">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <span class="fs-4 fw-bold text-white" th:text="${store.storeName}">Inventra Supermarket</span>
+                </div>
+                <div class="text-secondary small" th:text="${store.address}">Shop #4, Gandhi Main Road, Bengaluru</div>
+                <div class="text-secondary small">
+                    <i class="bi bi-telephone me-1"></i><span th:text="${store.phone}">+91 98765 43210</span> &bull; GSTIN: 29AABCU9603R1Z7
+                </div>
+            </div>
+
+            <hr class="dashed-divider">
+
+            <!-- Invoice Metadata -->
+            <div class="receipt-mono small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-secondary">INVOICE NO:</span>
+                    <span class="text-white fw-bold" th:text="${invoiceNumber}">INV-102948</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-secondary">DATE &amp; TIME:</span>
+                    <span class="text-white" th:text="${billTime}">12 Nov 2026, 09:30 PM</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-secondary">PAYMENT MODE:</span>
+                    <span th:if="${paymentType == 'CASH'}" class="badge-optimal-custom">
+                        <i class="bi bi-check-circle-fill me-1"></i> PAID &bull; CASH / UPI
+                    </span>
+                    <span th:if="${paymentType == 'UDHAR'}" class="badge-udhar-custom">
+                        <i class="bi bi-journal-bookmark me-1"></i> KHATA DEBT
+                    </span>
+                </div>
+            </div>
+
+            <hr class="dashed-divider">
+
+            <!-- Items Table -->
+            <div class="mb-3">
+                <table class="w-100 receipt-mono small">
+                    <thead>
+                        <tr class="text-secondary" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                            <th class="pb-2 text-start">ITEM</th>
+                            <th class="pb-2 text-center">QTY</th>
+                            <th class="pb-2 text-end">RATE</th>
+                            <th class="pb-2 text-end">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+                            <td class="py-2 text-white fw-bold" th:text="${item.name}">Fortune Oil 1L</td>
+                            <td class="py-2 text-center text-white" th:text="${item.quantity}">2</td>
+                            <td class="py-2 text-end text-secondary" th:text="${'₹' + #numbers.formatDecimal(item.price, 1, 2)}">₹145.00</td>
+                            <td class="py-2 text-end text-white fw-bold" th:text="${'₹' + #numbers.formatDecimal(item.lineTotal, 1, 2)}">₹290.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="dashed-divider">
+
+            <!-- Financial Calculations -->
+            <div class="receipt-mono small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-secondary">Subtotal (<span th:text="${itemCount}">0</span> items):</span>
+                    <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(subTotal, 1, 2)}">₹290.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-secondary">CGST (2.5%):</span>
+                    <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(taxAmount / 2.0, 1, 2)}">₹7.25</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">SGST (2.5%):</span>
+                    <span class="text-white" th:text="${'₹' + #numbers.formatDecimal(taxAmount / 2.0, 1, 2)}">₹7.25</span>
+                </div>
+                <div class="d-flex justify-content-between fs-5 fw-bold pt-2" style="border-top: 1px solid var(--card-border);">
+                    <span class="text-white">NET TOTAL:</span>
+                    <span style="color: var(--neon-mint);" th:text="${'₹' + #numbers.formatDecimal(grandTotal, 1, 2)}">₹304.50</span>
+                </div>
+            </div>
+
+            <!-- Khata Debt Information (Only if UDHAR) -->
+            <div th:if="${customer != null}" class="mt-3 p-3 rounded-3" style="background: rgba(255, 179, 0, 0.08); border: 1px solid rgba(255, 179, 0, 0.25);">
+                <div class="fw-bold mb-1" style="color: #ffb300; font-size: 13px;">
+                    <i class="bi bi-person-exclamation me-1"></i> Customer Khata Debt Recorded
+                </div>
+                <div class="small text-secondary">
+                    Customer: <span class="text-white fw-bold" th:text="${customer.name}">Ramesh Kumar</span>
+                    (<span th:text="${customer.phone}">+91 9876543210</span>)
+                </div>
+                <div class="small text-secondary mt-1">
+                    New Total Outstanding Due: 
+                    <span class="fw-bold fs-6" style="color: #ff6b81;" th:text="${'₹' + #numbers.formatDecimal(customer.creditBalance, 1, 2)}">₹1,754.50</span>
+                </div>
+            </div>
+
+            <!-- Dynamic UPI QR Code Box (If Cash/UPI) -->
+            <div th:if="${paymentType == 'CASH'}" class="text-center mt-3 pt-2">
+                <div class="small text-secondary fw-bold mb-2">
+                    <i class="bi bi-qr-code-scan me-1" style="color: var(--neon-mint);"></i> SCAN TO PAY VIA ANY UPI APP
+                </div>
+                <div class="upi-qr-card">
+                    <img th:src="${upiQrUrl}" alt="UPI Payment QR Code" style="width: 140px; height: 140px; display: block; margin: auto;">
+                </div>
+                <div class="mt-2 text-secondary" style="font-size: 11px;">
+                    <span>GPay</span> &bull; <span>PhonePe</span> &bull; <span>Paytm</span> &bull; <span>BHIM</span>
+                </div>
+            </div>
+
+            <hr class="dashed-divider">
+
+            <!-- Receipt Footer -->
+            <div class="text-center text-secondary small pt-1">
+                <p class="mb-1 fw-bold text-white">Thank you for shopping with us!</p>
+                <p class="mb-0" style="font-size: 11px;">Returns accepted within 7 days with bill &bull; System Powered by <strong>Inventra</strong></p>
+            </div>
+
+        </div>
+
+        <!-- Back Button Bottom (No-Print) -->
+        <div class="text-center mt-3 no-print">
+            <a href="/pos" class="btn-back">
+                <i class="bi bi-cart3"></i> Start New Billing Transaction
+            </a>
+        </div>
+
     </div>
 
-    <!-- Printable Thermal Receipt Box -->
-    <div class="receipt-card shadow-sm">
-        <div class="text-center mb-3">
-            <h4 class="fw-bold mb-0" th:text="${store.storeName}">Inventra Store</h4>
-            <p class="small text-muted mb-0" th:text="${store.address}">12 Main Market Road</p>
-            <p class="small text-muted" th:text="${'Phone: ' + store.phone}">Phone: +91 9876543210</p>
-            <hr style="border-top: 1px dashed #333;">
-        </div>
-
-        <div class="d-flex justify-content-between small mb-2">
-            <span>Date & Time:</span>
-            <span th:text="${billTime}">13-10-2026 12:30 PM</span>
-        </div>
-        <div class="d-flex justify-content-between small mb-3">
-            <span>Payment:</span>
-            <span class="fw-bold" th:text="${paymentType}">CASH</span>
-        </div>
-
-        <hr style="border-top: 1px dashed #333;">
-
-        <!-- Items Table -->
-        <table class="table table-borderless table-sm small mb-3">
-            <thead>
-                <tr class="border-bottom">
-                    <th>Item</th>
-                    <th class="text-center">Qty</th>
-                    <th class="text-end">Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td th:text="${product.name}">Aashirvaad Atta</td>
-                    <td class="text-center" th:text="${quantity}">1</td>
-                    <td class="text-end" th:text="${'₹' + totalAmount}">₹250.0</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <hr style="border-top: 1px dashed #333;">
-
-        <div class="d-flex justify-content-between fs-5 fw-bold mb-3">
-            <span>TOTAL AMOUNT:</span>
-            <span th:text="${'₹' + totalAmount}">₹250.0</span>
-        </div>
-
-        <!-- Khata Customer Summary (Only if Udhar) -->
-        <div th:if="${customer != null}" class="bg-light p-2 rounded small mb-3">
-            <div class="fw-bold text-danger">⚠️ CHARGED TO KHATA:</div>
-            <div>Customer: <span class="fw-bold" th:text="${customer.name}">Ramesh</span></div>
-            <div>New Outstanding Debt: <span class="fw-bold text-danger" th:text="${'₹' + customer.creditBalance}">₹700.0</span></div>
-        </div>
-
-        <div class="text-center small text-muted mt-4">
-            <p class="mb-0">Thank you for shopping with us!</p>
-            <p class="mb-0">Powered by <strong>Inventra</strong></p>
-        </div>
-    </div>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Khata - Inventra</title>
+    <title>Customer Khata Directory — Inventra</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -13,88 +13,198 @@
 </head>
 <body>
 
-    <!-- Top Navbar -->
-    <header class="inventoory-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <a href="/" class="brand-logo">
-                <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
-                <span>inventra</span>
-            </a>
-            <nav class="nav-pill-group">
-                <a href="/" class="nav-pill-link" sec:authorize="hasRole('ADMIN')"><i class="bi bi-grid-1x2"></i> Dashboard</a>
-                <a href="/products" class="nav-pill-link"><i class="bi bi-bag-check-fill"></i> Inventory</a>
-                <a href="/pos" class="nav-pill-link"><i class="bi bi-cart3"></i> Sales (POS)</a>
-                <a href="/customers" class="nav-pill-link active"><i class="bi bi-journal-bookmark"></i> Khata</a>
-            </nav>
-            <div class="d-flex align-items-center gap-2">
-                <a href="/customers/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
-                    <i class="bi bi-person-plus-fill me-1"></i> Register Customer
+<div class="app-layout">
+
+    <!-- ══════════ LEFT COLLAPSIBLE SIDEBAR ══════════ -->
+    <aside class="app-sidebar" id="appSidebar">
+        <div>
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
+                <a href="/" class="brand-logo text-decoration-none">
+                    <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
                 </a>
-                <div class="d-flex align-items-center gap-2 ms-2 ps-2 border-start" style="border-color: var(--card-border) !important;">
-                    <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
-                        <i class="bi bi-person-circle text-primary me-1"></i> <span sec:authentication="name">User</span>
-                    </span>
-                    <form th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="top-action-btn text-danger" title="Logout">
-                            <i class="bi bi-box-arrow-right"></i>
-                        </button>
-                    </form>
+                <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <a href="/" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/pos" class="sidebar-nav-link">
+                    <i class="bi bi-cart3"></i>
+                    <span class="sidebar-text">POS Terminal</span>
+                </a>
+                <a href="/products" class="sidebar-nav-link">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="sidebar-text">Product Master</span>
+                </a>
+                <a href="/customers" class="sidebar-nav-link active">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span class="sidebar-text">Khata Directory</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer pt-3 border-top" style="border-color: var(--card-border) !important;">
+            <div class="d-flex align-items-center justify-content-between px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 14px; background: #1c272e; color: var(--neon-mint);">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 100px;" sec:authentication="name">User</div>
+                        <div class="text-secondary" style="font-size: 10.5px;">Active Terminal</div>
+                    </div>
+                </div>
+                <form action="/login?logout" method="post" class="m-0">
+                    <button type="submit" class="sidebar-toggle-btn text-danger p-0 border-0 bg-transparent" title="Logout">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ══════════ MAIN CONTENT AREA ══════════ -->
+    <div class="app-main">
+
+        <!-- Top Header Bar -->
+        <header class="app-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="sidebar-toggle-btn d-lg-none" onclick="toggleSidebarMobile()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="/"><i class="bi bi-house-door"></i> Home</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <span class="active">Khata Directory</span>
                 </div>
             </div>
-        </div>
-    </header>
 
-    <div class="container-fluid px-4 py-4">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="h3 fw-bold text-white mb-1">Customer Credit Ledger (Khata)</h2>
-                <p class="text-secondary small mb-0">Track customer phone numbers, outstanding debt balances, and log cash repayments</p>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/customers/add" class="btn btn-sm fw-bold px-3 py-2 rounded-pill" style="background: var(--neon-mint); color: #071710;">
+                    <i class="bi bi-person-plus-fill me-1"></i> Register Customer
+                </a>
+                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                    <i class="bi bi-person-badge-fill text-info me-1"></i> <span sec:authentication="name">User</span>
+                </span>
             </div>
-        </div>
+        </header>
 
-        <div class="filter-panel p-0 overflow-hidden">
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle" style="color: #cfd8dc;">
-                    <thead style="background: #141b1f;">
-                        <tr>
-                            <th class="py-3 px-4 text-secondary text-uppercase small">ID</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small">Customer Name</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small">Mobile</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small">Udhar Debt Balance</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small">Status</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small text-end">Clear Udhar Payment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="customer : ${customers}" style="border-bottom: 1px solid var(--card-border);">
-                            <td class="py-3 px-4 text-secondary" th:text="${'#C' + customer.id}">#C1</td>
-                            <td class="py-3 px-4 fw-bold text-white" th:text="${customer.name}">Ramesh Kumar</td>
-                            <td class="py-3 px-4 text-secondary" th:text="${customer.phone}">9876543210</td>
-                            <td class="py-3 px-4">
-                                <span th:class="${customer.creditBalance > 0} ? 'fw-bold fs-6 text-danger' : 'fw-bold fs-6 text-success'"
-                                      th:text="${'₹' + customer.creditBalance}">₹450.0</span>
-                            </td>
-                            <td class="py-3 px-4">
-                                <span th:if="${customer.creditBalance > 0}" class="tag-low">Pending Due</span>
-                                <span th:if="${customer.creditBalance == 0.0}" class="margin-pill">All Cleared ✅</span>
-                            </td>
-                            <td class="py-3 px-4 text-end">
-                                <form th:action="@{/customers/repay}" method="post" class="d-inline-flex gap-2 justify-content-end">
-                                    <input type="hidden" name="customerId" th:value="${customer.id}">
-                                    <input type="number" step="10" name="amountPaid" class="inventoory-search py-1 px-3 text-center" style="width: 110px;" placeholder="₹ Amount" required>
-                                    <button type="submit" class="btn btn-sm fw-bold px-3 rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
-                                        Pay
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Main Body -->
+        <main class="container-fluid px-4 py-4">
+
+            <!-- Title & Overview -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h3 fw-bold text-white mb-1">Customer Credit Ledger (Khata)</h2>
+                    <p class="text-secondary small mb-0">Track customer contact details, send 1-click WhatsApp payment reminders, and record cash repayments</p>
+                </div>
             </div>
-        </div>
 
+            <!-- Ledger Table -->
+            <div class="filter-panel p-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle" style="color: #cfd8dc;">
+                        <thead style="background: #141b1f;">
+                            <tr>
+                                <th class="py-3 px-3 text-secondary text-uppercase small">ID</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small">Customer</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small">Mobile</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small">Udhar Debt</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small">Status</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small text-center">WhatsApp Alert</th>
+                                <th class="py-3 px-3 text-secondary text-uppercase small text-end">Record Repayment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="customer : ${customers}" style="border-bottom: 1px solid var(--card-border);">
+                                <td class="py-3 px-3 text-secondary" th:text="${'#C' + customer.id}">#C1</td>
+                                <td class="py-3 px-3 fw-bold text-white">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="brand-icon" style="width: 28px; height: 28px; font-size: 12px; background: #1c272e; color: #70a1ff;">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span th:text="${customer.name}">Ramesh Kumar</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 text-secondary small" th:text="${customer.phone}">9876543210</td>
+                                <td class="py-3 px-3">
+                                    <span th:class="${customer.creditBalance > 0} ? 'fw-bold fs-6 text-danger' : 'fw-bold fs-6 text-success'"
+                                          th:text="${'₹' + #numbers.formatDecimal(customer.creditBalance, 1, 2)}">₹1,450.00</span>
+                                </td>
+                                <td class="py-3 px-3">
+                                    <span th:if="${customer.creditBalance > 0}" class="tag-low">Pending Due</span>
+                                    <span th:if="${customer.creditBalance == 0.0}" class="margin-pill">All Cleared &check;</span>
+                                </td>
+
+                                <!-- 1-Click WhatsApp Debt Reminder Button (Pillar 4 Complete!) -->
+                                <td class="py-3 px-3 text-center">
+                                    <a th:if="${customer.creditBalance > 0}" 
+                                       th:href="${customer.getWhatsAppReminderUrl()}" 
+                                       target="_blank" 
+                                       class="btn btn-sm px-3 rounded-pill fw-bold text-white shadow-sm d-inline-flex align-items-center gap-1" 
+                                       style="background: #25D366; font-size: 11.5px;"
+                                       title="Send WhatsApp Debt Reminder">
+                                        <i class="bi bi-whatsapp"></i> Remind
+                                    </a>
+                                    <span th:if="${customer.creditBalance == 0.0}" class="text-secondary small" style="font-size: 11px;">
+                                        <i class="bi bi-check2-all text-success me-1"></i> No Due
+                                    </span>
+                                </td>
+
+                                <!-- Cash Repayment Form -->
+                                <td class="py-3 px-3 text-end">
+                                    <form th:action="@{/customers/repay}" method="post" class="d-inline-flex gap-2 justify-content-end">
+                                        <input type="hidden" name="customerId" th:value="${customer.id}">
+                                        <input type="number" step="10" name="amountPaid" class="inventoory-search py-1 px-3 text-center" style="width: 110px;" placeholder="₹ Amount" required>
+                                        <button type="submit" class="btn btn-sm fw-bold px-3 rounded-pill" style="background: var(--neon-mint); color: #071710;">
+                                            Pay
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
     </div>
+
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Sidebar Toggle Logic -->
+<script>
+    function toggleSidebar() {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        localStorage.setItem('inventra_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        const icon = document.getElementById('sidebarChevron');
+        if (icon) {
+            icon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
+        }
+    }
+    function toggleSidebarMobile() {
+        document.body.classList.toggle('sidebar-open');
+    }
+    (function() {
+        if (localStorage.getItem('inventra_sidebar_collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+            const icon = document.getElementById('sidebarChevron');
+            if (icon) icon.className = 'bi bi-chevron-bar-right';
+        }
+    })();
+</script>
 
 </body>
 </html>

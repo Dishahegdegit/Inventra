@@ -3,117 +3,604 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Cashier Terminal - Inventra</title>
+    <title>POS Cashier Terminal — Inventra</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom Theme -->
     <link rel="stylesheet" th:href="@{/css/inventoory-theme.css}">
+
+    <style>
+        .pos-grid-container {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .catalog-panel {
+            background: var(--card-surface);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .product-pick-item {
+            background: #11171d;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .product-pick-item:hover {
+            border-color: rgba(0, 220, 130, 0.4);
+            background: #141d24;
+        }
+
+        .product-img-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #162029;
+            border: 1px solid var(--card-border);
+        }
+
+        .cart-panel {
+            background: var(--card-surface);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 80px;
+        }
+
+        .cart-table-wrap {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 14px;
+        }
+
+        .cart-table-wrap::-webkit-scrollbar {
+            width: 5px;
+        }
+        .cart-table-wrap::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 4px;
+        }
+
+        .cart-item-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 9px 0;
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .qty-stepper {
+            display: inline-flex;
+            align-items: center;
+            background: #11171d;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .qty-btn {
+            background: transparent;
+            border: none;
+            color: var(--neon-mint);
+            padding: 3px 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .qty-btn:hover {
+            background: rgba(0, 220, 130, 0.15);
+        }
+        .qty-val {
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 0 6px;
+            color: #ffffff;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .bill-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .bill-grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--card-border);
+            padding-top: 10px;
+            margin-top: 6px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .payment-radio-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .payment-card-opt {
+            background: #11171d;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .payment-card-opt.active {
+            border-color: var(--neon-mint);
+            background: rgba(0, 220, 130, 0.1);
+            color: var(--neon-mint);
+        }
+
+        @media (max-width: 992px) {
+            .pos-grid-container {
+                grid-template-columns: 1fr;
+            }
+            .cart-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Top Navbar -->
-    <header class="inventoory-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <a href="/" class="brand-logo">
-                <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
-                <span>inventra</span>
-            </a>
-            <nav class="nav-pill-group">
-                <a href="/" class="nav-pill-link" sec:authorize="hasRole('ADMIN')"><i class="bi bi-grid-1x2"></i> Dashboard</a>
-                <a href="/products" class="nav-pill-link"><i class="bi bi-bag-check-fill"></i> Inventory</a>
-                <a href="/pos" class="nav-pill-link active"><i class="bi bi-cart3"></i> Sales (POS)</a>
-                <a href="/customers" class="nav-pill-link"><i class="bi bi-journal-bookmark"></i> Khata</a>
+<div class="app-layout">
+
+    <!-- ══════════ LEFT COLLAPSIBLE SIDEBAR ══════════ -->
+    <aside class="app-sidebar" id="appSidebar">
+        <div>
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
+                <a href="/" class="brand-logo text-decoration-none">
+                    <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
+                </a>
+                <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <a href="/" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/pos" class="sidebar-nav-link active">
+                    <i class="bi bi-cart3"></i>
+                    <span class="sidebar-text">POS Terminal</span>
+                </a>
+                <a href="/products" class="sidebar-nav-link">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="sidebar-text">Product Master</span>
+                </a>
+                <a href="/customers" class="sidebar-nav-link">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span class="sidebar-text">Khata Directory</span>
+                </a>
             </nav>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
-                    <i class="bi bi-person-badge-fill text-info me-1"></i> <span sec:authentication="name">User</span>
-                </span>
-                <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="top-action-btn text-danger" title="Logout">
-                        <i class="bi bi-box-arrow-right"></i>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer pt-3 border-top" style="border-color: var(--card-border) !important;">
+            <div class="d-flex align-items-center justify-content-between px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 14px; background: #1c272e; color: var(--neon-mint);">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 100px;" sec:authentication="name">Cashier</div>
+                        <div class="text-secondary" style="font-size: 10.5px;">Counter Lane #1</div>
+                    </div>
+                </div>
+                <form action="/login?logout" method="post" class="m-0">
+                    <button type="submit" class="sidebar-toggle-btn text-danger p-0 border-0 bg-transparent" title="Logout">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
                     </button>
                 </form>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <div class="container py-5" style="max-width: 650px;">
-        <div class="filter-panel p-4 shadow-lg">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-bold text-white mb-1"><i class="bi bi-receipt-cutoff me-2" style="color: var(--neon-mint);"></i> Cashier Billing Counter</h3>
-                    <p class="text-secondary small mb-0">Select item, adjust quantity, choose payment method, and complete sale</p>
-                </div>
-            </div>
+    <!-- ══════════ MAIN CONTENT AREA ══════════ -->
+    <div class="app-main">
 
-            <!-- Error Alert -->
-            <div th:if="${param.error}" class="alert alert-danger py-2 px-3 small border-0 mb-4" role="alert" style="background: rgba(255, 71, 87, 0.2); color: #ff6b81;">
-                <strong>⚠️ Insufficient Stock!</strong> The requested quantity exceeds available inventory.
-            </div>
-
-            <form th:action="@{/pos/checkout}" method="post">
-                
-                <!-- Product Selection -->
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-bold">SELECT PRODUCT FROM INVENTORY</label>
-                    <select name="productId" class="form-select filter-select" required>
-                        <option value="" disabled selected>-- Choose an item in stock --</option>
-                        <option th:each="product : ${products}" 
-                                th:value="${product.id}" 
-                                th:text="${product.name + ' — ₹' + product.price + ' (Available: ' + product.stockQuantity + ')'}">
-                            Amul Milk — ₹32.0 (Available: 4)
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Quantity -->
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-bold">PURCHASE QUANTITY</label>
-                    <input type="number" name="quantity" min="1" value="1" class="inventoory-search ps-3" required>
-                </div>
-
-                <!-- Payment Method -->
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-bold">PAYMENT METHOD</label>
-                    <select name="paymentType" id="paymentTypeSelect" class="form-select filter-select" onchange="toggleCustomerSelect()" required>
-                        <option value="CASH">💵 Cash / UPI (Paid Now)</option>
-                        <option value="UDHAR">📒 Udhar / Credit (Add to Customer Khata)</option>
-                    </select>
-                </div>
-
-                <!-- Customer Selection for Udhar -->
-                <div class="mb-4" id="customerSelectBox" style="display: none;">
-                    <label class="form-label text-danger small fw-bold">SELECT CUSTOMER FOR KHATA DEBT</label>
-                    <select name="customerId" class="form-select filter-select" style="border-color: rgba(255, 71, 87, 0.4) !important;">
-                        <option value="" selected>-- Select Registered Customer --</option>
-                        <option th:each="customer : ${customers}" 
-                                th:value="${customer.id}" 
-                                th:text="${customer.name + ' (Phone: ' + customer.phone + ' | Current Debt: ₹' + customer.creditBalance + ')'}">
-                            Ramesh Kumar (Debt: ₹450)
-                        </option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
-                    <i class="bi bi-lightning-fill me-1"></i> Complete Sale & Generate Receipt
+        <!-- Top Header Bar -->
+        <header class="app-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="sidebar-toggle-btn d-lg-none" onclick="toggleSidebarMobile()">
+                    <i class="bi bi-list"></i>
                 </button>
-            </form>
-        </div>
+                <div class="breadcrumb-nav">
+                    <a href="/"><i class="bi bi-house-door"></i> Home</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <span class="active">POS Counter</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="/products" class="notif-bell-btn text-decoration-none" title="Stock Alerts">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-badge-dot">!</span>
+                </a>
+                <span class="badge rounded-pill px-3 py-2 text-white" style="background: #172228; border: 1px solid var(--card-border);">
+                    <i class="bi bi-person-badge-fill text-info me-1"></i> <span sec:authentication="name">Cashier</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- POS Terminal Content -->
+        <main class="container-fluid px-4 py-4">
+
+            <!-- Error Alerts -->
+            <div th:if="${param.error}" class="alert alert-danger py-2 px-3 small border-0 mb-3" style="background: rgba(255, 71, 87, 0.2); color: #ff6b81;">
+                <i class="bi bi-exclamation-circle-fill me-1"></i>
+                <span th:if="${param.error[0] == 'InsufficientStock'}">Insufficient stock for one or more items in the cart!</span>
+                <span th:if="${param.error[0] == 'EmptyCart'}">Cart is empty! Please add products before checking out.</span>
+                <span th:if="${param.error[0] == 'InvalidCart'}">Error parsing bill items. Please try again.</span>
+            </div>
+
+            <div class="pos-grid-container">
+
+                <!-- Left Column: Product Catalog -->
+                <div class="catalog-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold text-white mb-0"><i class="bi bi-cart-check me-2" style="color: var(--neon-mint);"></i> Store Catalog</h5>
+                            <small class="text-secondary">Search items and click to add to bill</small>
+                        </div>
+                        <span class="badge rounded-pill px-3 py-1" style="background: rgba(0, 220, 130, 0.12); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.25); font-size: 11px;">
+                            <span th:text="${products.size()}">0</span> In Stock
+                        </span>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="position-relative mb-3">
+                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                        <input type="text" id="posSearchInput" onkeyup="filterCatalog()" class="inventoory-search" placeholder="Search product name, category, or SKU...">
+                    </div>
+
+                    <!-- List -->
+                    <div class="d-flex flex-column gap-2" id="catalogList" style="max-height: 480px; overflow-y: auto; padding-right: 4px;">
+                        <div th:each="product : ${products}" 
+                             class="product-pick-item" 
+                             th:attr="data-id=${product.id}, data-name=${product.name}, data-price=${product.price}, data-stock=${product.stockQuantity}, data-category=${product.category}, data-sku=${product.displaySku}">
+                            
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:src="${product.displayImage}" alt="Product" class="product-img-thumb" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=100&auto=format&fit=crop&q=80'">
+                                <div>
+                                    <div class="fw-bold text-white small product-title" th:text="${product.name}">Fortune Oil 1L</div>
+                                    <div class="text-secondary" style="font-size: 11px;">
+                                        <span class="badge" style="background: #1b2631; color: #a4b0be;" th:text="${product.category}">Groceries</span>
+                                        <span class="ms-1" th:text="${product.displaySku}">SKU-OIL-102</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-end">
+                                    <div class="fw-bold" style="color: var(--neon-mint); font-size: 14px;" th:text="${'₹' + #numbers.formatDecimal(product.price, 1, 2)}">₹145.00</div>
+                                    <small style="font-size: 11px;" th:class="${product.stockQuantity <= 5 ? 'text-warning' : 'text-secondary'}" th:text="${product.stockQuantity + ' left'}">48 left</small>
+                                </div>
+                                
+                                <button type="button" 
+                                        class="btn btn-sm px-3 rounded-pill fw-bold" 
+                                        th:disabled="${product.stockQuantity <= 0}"
+                                        th:style="${product.stockQuantity > 0 ? 'background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.3); font-size: 12px;' : 'background: #1b2631; color: #636e72; font-size: 12px;'}"
+                                        th:onclick="addToCart([[${product.id}]], [[${product.name}]], [[${product.price}]], [[${product.stockQuantity}]])">
+                                    <i class="bi bi-plus-lg me-1"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Active Cart -->
+                <div class="cart-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-white mb-0">
+                            <i class="bi bi-receipt me-1" style="color: var(--neon-mint);"></i> Current Bill
+                        </h6>
+                        <button type="button" class="btn btn-sm text-secondary p-0" onclick="clearCart()" style="font-size: 12px;">
+                            <i class="bi bi-trash3 me-1"></i> Clear
+                        </button>
+                    </div>
+
+                    <div class="cart-table-wrap">
+                        <div id="cartItemsList"></div>
+                        <div id="emptyCartMessage" class="text-center py-5 text-secondary">
+                            <i class="bi bi-cart-x fs-2 d-block mb-2" style="opacity: 0.3;"></i>
+                            <p class="small mb-0">Cart is empty. Add products on the left.</p>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown -->
+                    <div class="p-3 rounded-3 mb-3" style="background: #10161b; border: 1px solid var(--card-border);">
+                        <div class="bill-summary-row">
+                            <span>Subtotal:</span>
+                            <span class="text-white fw-bold" id="subTotalDisplay">₹0.00</span>
+                        </div>
+                        <div class="bill-summary-row">
+                            <span>GST (5%):</span>
+                            <span class="text-white" id="taxDisplay">₹0.00</span>
+                        </div>
+                        <div class="bill-grand-total">
+                            <span>Grand Total:</span>
+                            <span style="color: var(--neon-mint);" id="grandTotalDisplay">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Form -->
+                    <form action="/pos/checkout" method="post" id="checkoutForm" onsubmit="return prepareAndValidateCheckout()">
+                        <div id="cartHiddenInputsContainer"></div>
+
+                        <label class="form-label text-secondary small fw-bold mb-1" style="font-size: 10.5px;">PAYMENT METHOD</label>
+                        <div class="payment-radio-group">
+                            <div class="payment-card-opt active" id="optCash" onclick="setPaymentType('CASH')">
+                                <i class="bi bi-cash-stack d-block fs-6 mb-1"></i>
+                                <span class="small fw-bold" style="font-size: 11.5px;">Cash / UPI</span>
+                            </div>
+                            <div class="payment-card-opt" id="optUdhar" onclick="setPaymentType('UDHAR')">
+                                <i class="bi bi-journal-bookmark d-block fs-6 mb-1"></i>
+                                <span class="small fw-bold" style="font-size: 11.5px;">Khata Debt</span>
+                            </div>
+                        </div>
+                        <input type="hidden" name="paymentType" id="paymentTypeInput" value="CASH">
+
+                        <!-- Customer for Udhar -->
+                        <div id="customerSelectSection" style="display: none;" class="mb-3">
+                            <label class="form-label text-warning small fw-bold" style="font-size: 10.5px;">SELECT KHATA ACCOUNT</label>
+                            <select name="customerId" id="customerIdSelect" class="form-select filter-select" style="border-color: rgba(255, 179, 0, 0.4) !important;">
+                                <option value="" disabled selected>-- Choose Customer --</option>
+                                <option th:each="customer : ${customers}" 
+                                        th:value="${customer.id}" 
+                                        th:text="${customer.name + ' (' + customer.phone + ') — Due: ₹' + customer.creditBalance}">
+                                    Ramesh Kumar (+91 9876543210) — Due: ₹1,450
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="checkoutBtn" class="btn w-100 py-3 fw-bold rounded-pill shadow" style="background: var(--neon-mint); color: #071710;" disabled>
+                            <i class="bi bi-printer-fill me-1"></i> Complete &amp; Print Bill
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </main>
     </div>
 
-    <script>
-        function toggleCustomerSelect() {
-            var paymentType = document.getElementById("paymentTypeSelect").value;
-            var customerBox = document.getElementById("customerSelectBox");
-            if (paymentType === "UDHAR") {
-                customerBox.style.display = "block";
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Cart & Sidebar Scripts -->
+<script>
+    let cart = [];
+
+    function addToCart(productId, name, price, stockQuantity) {
+        const existing = cart.find(item => item.productId === productId);
+        if (existing) {
+            if (existing.quantity < stockQuantity) {
+                existing.quantity += 1;
+                existing.lineTotal = existing.quantity * existing.price;
             } else {
-                customerBox.style.display = "none";
+                alert("Maximum available stock reached for " + name);
+                return;
+            }
+        } else {
+            cart.push({
+                productId: productId,
+                name: name,
+                price: price,
+                quantity: 1,
+                stockQuantity: stockQuantity,
+                lineTotal: price
+            });
+        }
+        renderCart();
+    }
+
+    function updateQty(productId, delta) {
+        const item = cart.find(i => i.productId === productId);
+        if (!item) return;
+
+        if (delta > 0 && item.quantity >= item.stockQuantity) {
+            alert("Cannot exceed available stock (" + item.stockQuantity + ")");
+            return;
+        }
+
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.productId !== productId);
+        } else {
+            item.lineTotal = item.quantity * item.price;
+        }
+        renderCart();
+    }
+
+    function removeItem(productId) {
+        cart = cart.filter(i => i.productId !== productId);
+        renderCart();
+    }
+
+    function clearCart() {
+        cart = [];
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cartItemsList');
+        const emptyMsg = document.getElementById('emptyCartMessage');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        if (cart.length === 0) {
+            container.innerHTML = '';
+            emptyMsg.style.display = 'block';
+            checkoutBtn.disabled = true;
+            document.getElementById('subTotalDisplay').innerText = '₹0.00';
+            document.getElementById('taxDisplay').innerText = '₹0.00';
+            document.getElementById('grandTotalDisplay').innerText = '₹0.00';
+            return;
+        }
+
+        emptyMsg.style.display = 'none';
+        checkoutBtn.disabled = false;
+
+        let subTotal = 0;
+        let html = '';
+
+        cart.forEach(item => {
+            subTotal += item.lineTotal;
+            html += `
+                <div class="cart-item-row">
+                    <div>
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 130px;">${item.name}</div>
+                        <div class="text-secondary" style="font-size: 11px;">₹${item.price.toFixed(2)}</div>
+                    </div>
+
+                    <div class="qty-stepper">
+                        <button type="button" class="qty-btn" onclick="updateQty(${item.productId}, -1)">−</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button type="button" class="qty-btn" onclick="updateQty(${item.productId}, 1)">+</button>
+                    </div>
+
+                    <div class="text-end fw-bold text-white small" style="min-width: 55px;">
+                        ₹${item.lineTotal.toFixed(2)}
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn btn-sm text-danger p-0 ms-1" onclick="removeItem(${item.productId})" title="Remove item">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        const tax = Math.round((subTotal * 0.05) * 100) / 100;
+        const grandTotal = Math.round((subTotal + tax) * 100) / 100;
+
+        document.getElementById('subTotalDisplay').innerText = '₹' + subTotal.toFixed(2);
+        document.getElementById('taxDisplay').innerText = '₹' + tax.toFixed(2);
+        document.getElementById('grandTotalDisplay').innerText = '₹' + grandTotal.toFixed(2);
+    }
+
+    function setPaymentType(type) {
+        document.getElementById('paymentTypeInput').value = type;
+        const optCash = document.getElementById('optCash');
+        const optUdhar = document.getElementById('optUdhar');
+        const customerSection = document.getElementById('customerSelectSection');
+        const customerSelect = document.getElementById('customerIdSelect');
+
+        if (type === 'UDHAR') {
+            optUdhar.classList.add('active');
+            optCash.classList.remove('active');
+            customerSection.style.display = 'block';
+            customerSelect.required = true;
+        } else {
+            optCash.classList.add('active');
+            optUdhar.classList.remove('active');
+            customerSection.style.display = 'none';
+            customerSelect.required = false;
+        }
+    }
+
+    function prepareAndValidateCheckout() {
+        if (cart.length === 0) {
+            alert("Please add at least one product to the cart!");
+            return false;
+        }
+        const paymentType = document.getElementById('paymentTypeInput').value;
+        if (paymentType === 'UDHAR') {
+            const customerId = document.getElementById('customerIdSelect').value;
+            if (!customerId) {
+                alert("Please select a customer for Khata (Udhar) debt recording!");
+                return false;
             }
         }
-    </script>
+
+        const container = document.getElementById('cartHiddenInputsContainer');
+        container.innerHTML = '';
+        cart.forEach(item => {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'itemIds';
+            idInput.value = item.productId;
+            container.appendChild(idInput);
+
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'hidden';
+            qtyInput.name = 'itemQtys';
+            qtyInput.value = item.quantity;
+            container.appendChild(qtyInput);
+        });
+
+        return true;
+    }
+
+    function filterCatalog() {
+        const query = document.getElementById('posSearchInput').value.toLowerCase();
+        const items = document.querySelectorAll('.product-pick-item');
+        items.forEach(el => {
+            const name = el.getAttribute('data-name').toLowerCase();
+            const sku = el.getAttribute('data-sku').toLowerCase();
+            const category = el.getAttribute('data-category').toLowerCase();
+            if (name.includes(query) || sku.includes(query) || category.includes(query)) {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleSidebar() {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        localStorage.setItem('inventra_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        const icon = document.getElementById('sidebarChevron');
+        if (icon) {
+            icon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
+        }
+    }
+    function toggleSidebarMobile() {
+        document.body.classList.toggle('sidebar-open');
+    }
+    (function() {
+        if (localStorage.getItem('inventra_sidebar_collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+            const icon = document.getElementById('sidebarChevron');
+            if (icon) icon.className = 'bi bi-chevron-bar-right';
+        }
+    })();
+</script>
 
 </body>
 </html>

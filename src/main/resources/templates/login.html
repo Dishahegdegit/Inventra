@@ -13,16 +13,23 @@
 
     <style>
         :root {
-            --bg-obsidian: #0a0e11;
-            --bg-surface:  #11171d;
-            --bg-card:     #161f28;
-            --border-dim:  #1d2936;
-            --border-focus:#00dc82;
-            --neon-mint:   #00dc82;
-            --neon-glow:   rgba(0, 220, 130, 0.25);
-            --text-main:   #edf2f7;
-            --text-sub:    #7b8f9f;
-            --danger:      #ff4d4d;
+            /* Left Panel: Distinct Deep Emerald Slate Theme */
+            --left-bg-gradient: linear-gradient(155deg, #0e1e24 0%, #13262f 45%, #0b151a 100%);
+            --left-card:        rgba(15, 30, 38, 0.85);
+            --left-card-border: rgba(0, 220, 130, 0.22);
+            --left-grid:        rgba(0, 220, 130, 0.045);
+
+            /* Right Panel: Clean Deep Obsidian */
+            --right-bg:         #070a0d;
+            --right-card:       #0e141a;
+            --right-border:     #1a2530;
+
+            /* Brand & Accent Colors */
+            --neon-mint:        #00dc82;
+            --neon-glow:        rgba(0, 220, 130, 0.35);
+            --text-pure:        #ffffff;
+            --text-light:       #e2e8f0;
+            --text-sub:         #8fa0b0;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,11 +38,11 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-obsidian);
-            color: var(--text-main);
+            background: var(--right-bg);
+            color: var(--text-light);
         }
 
-        /* ─── FULL SCREEN 1-VIEW WRAPPER ─── */
+        /* ─── FULL-SCREEN 1-VIEW WRAPPER ─── */
         .login-wrapper {
             display: flex;
             width: 100vw;
@@ -43,157 +50,159 @@
             overflow: hidden;
         }
 
-        /* ─── LEFT SHOWCASE PANEL ─── */
+        /* ─── LEFT SHOWCASE PANEL (CONTRASTING RICH EMERALD-SLATE) ─── */
         .showcase-panel {
-            flex: 1.15;
-            background: radial-gradient(circle at 10% 20%, #131d24 0%, #0c1216 100%);
-            border-right: 1px solid var(--border-dim);
-            padding: 28px 48px;
+            flex: 1.25;
+            background: var(--left-bg-gradient);
+            border-right: 1px solid rgba(0, 220, 130, 0.18);
+            padding: 34px 52px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
             overflow: hidden;
+            box-shadow: inset -30px 0 60px rgba(0, 0, 0, 0.4);
         }
 
+        /* Subtle Geometric Grid Overlay */
         .showcase-panel::before {
             content: '';
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(0, 220, 130, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 220, 130, 0.03) 1px, transparent 1px);
-            background-size: 28px 28px;
+                linear-gradient(var(--left-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--left-grid) 1px, transparent 1px);
+            background-size: 30px 30px;
             pointer-events: none;
         }
 
-        /* Brand */
-        .brand-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-        .brand-box {
-            width: 36px;
-            height: 36px;
-            background: var(--neon-mint);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #05140d;
-            font-size: 18px;
-            box-shadow: 0 0 20px var(--neon-glow);
-        }
-        .brand-title {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: -0.4px;
-            color: #ffffff;
-        }
-        .brand-badge {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            background: rgba(0, 220, 130, 0.12);
-            color: var(--neon-mint);
-            padding: 3px 8px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 220, 130, 0.25);
-            margin-left: 4px;
+        /* Ambient Glow Orb in Background */
+        .showcase-panel::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: -60px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(0, 220, 130, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
-        /* Hero Headline & Description */
+        /* Top Left Terminal Pill Badge */
+        .terminal-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 220, 130, 0.12);
+            border: 1px solid rgba(0, 220, 130, 0.3);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--neon-mint);
+            position: relative;
+            z-index: 2;
+            width: fit-content;
+        }
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-mint);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-mint);
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        /* Hero Content (BIGGER, ONE LINE HEADING) */
         .hero-content {
             margin-top: 14px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             position: relative;
             z-index: 2;
         }
         .hero-title {
-            font-size: 26px;
+            font-size: 30px;
             font-weight: 800;
-            line-height: 1.22;
+            line-height: 1.2;
             letter-spacing: -0.6px;
-            color: #ffffff;
-            margin-bottom: 6px;
+            color: var(--text-pure);
+            white-space: nowrap;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
         }
         .hero-title span {
             color: var(--neon-mint);
         }
         .hero-desc {
-            font-size: 12.5px;
+            font-size: 13.5px;
             line-height: 1.5;
-            color: var(--text-sub);
-            max-width: 480px;
+            color: #b0c4d4;
+            max-width: 580px;
             margin: 0;
         }
 
-        /* Inventory Terminal Card Showcase */
+        /* Real Inventory Terminal Card Showcase */
         .preview-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-dim);
-            border-radius: 14px;
-            padding: 16px 18px;
+            background: var(--left-card);
+            border: 1px solid var(--left-card-border);
+            border-radius: 16px;
+            padding: 18px 22px;
             position: relative;
             z-index: 2;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
         }
 
         .preview-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-dim);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 220, 130, 0.15);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
         }
         .preview-header-title {
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-sub);
+            letter-spacing: 0.08em;
+            color: var(--neon-mint);
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        .pulse-indicator {
-            width: 7px;
-            height: 7px;
-            background: var(--neon-mint);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--neon-mint);
         }
 
         /* Metric Highlights */
         .metric-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
         .metric-tile {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-dim);
+            background: rgba(10, 20, 26, 0.85);
+            border: 1px solid rgba(0, 220, 130, 0.18);
             border-radius: 10px;
-            padding: 8px 12px;
+            padding: 10px 14px;
         }
         .metric-label {
-            font-size: 10px;
-            color: var(--text-sub);
-            font-weight: 600;
+            font-size: 10.5px;
+            color: #8da1b2;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 2px;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
         }
         .metric-value {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
-            color: #ffffff;
+            color: var(--text-pure);
         }
 
         /* Product Stock Items */
@@ -203,10 +212,10 @@
             gap: 8px;
         }
         .stock-item {
-            background: rgba(17, 23, 29, 0.65);
-            border: 1px solid var(--border-dim);
+            background: rgba(10, 20, 26, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 9px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -214,68 +223,69 @@
         .item-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .item-icon {
-            width: 28px;
-            height: 28px;
-            background: rgba(0, 220, 130, 0.08);
-            border: 1px solid rgba(0, 220, 130, 0.2);
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 220, 130, 0.12);
+            border: 1px solid rgba(0, 220, 130, 0.3);
             color: var(--neon-mint);
-            border-radius: 6px;
+            border-radius: 7px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 14px;
         }
         .item-name {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-pure);
         }
         .item-category {
-            font-size: 10px;
-            color: var(--text-sub);
+            font-size: 11px;
+            color: #8da1b2;
         }
         .item-badge {
-            font-size: 10px;
+            font-size: 10.5px;
             font-weight: 700;
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: 5px;
         }
         .badge-optimal {
-            background: rgba(0, 220, 130, 0.12);
+            background: rgba(0, 220, 130, 0.14);
             color: var(--neon-mint);
-            border: 1px solid rgba(0, 220, 130, 0.25);
+            border: 1px solid rgba(0, 220, 130, 0.3);
         }
         .badge-warning {
-            background: rgba(255, 179, 0, 0.12);
+            background: rgba(255, 179, 0, 0.14);
             color: #ffb300;
-            border: 1px solid rgba(255, 179, 0, 0.25);
+            border: 1px solid rgba(255, 179, 0, 0.3);
         }
 
-        /* Left Footer */
+        /* Showcase Footer */
         .showcase-footer {
-            margin-top: 12px;
-            font-size: 11px;
-            color: var(--text-sub);
+            margin-top: 14px;
+            font-size: 12px;
+            color: #8da1b2;
             position: relative;
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
-        /* ─── RIGHT LOGIN FORM PANEL ─── */
+        /* ─── RIGHT LOGIN FORM PANEL (DEEP OBSIDIAN) ─── */
         .form-panel {
-            flex: 0.85;
-            background: var(--bg-obsidian);
-            padding: 32px 48px;
+            flex: 0.95;
+            background: var(--right-bg);
+            padding: 36px 56px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative;
         }
 
         .form-container {
@@ -283,29 +293,65 @@
             max-width: 420px;
         }
 
+        /* BRAND HEADER MOVED DIRECTLY ON TOP OF SIGN IN */
+        .brand-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .brand-box {
+            width: 44px;
+            height: 44px;
+            background: var(--neon-mint);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #071710;
+            font-size: 22px;
+            box-shadow: 0 0 24px var(--neon-glow);
+        }
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            color: var(--text-pure);
+            display: block;
+            line-height: 1.1;
+        }
+        .brand-badge {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neon-mint);
+        }
+
+        /* Sign In Header */
         .login-head {
             margin-bottom: 22px;
         }
         .login-head h2 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: #ffffff;
+            color: var(--text-pure);
             margin-bottom: 4px;
         }
         .login-head p {
-            font-size: 13px;
+            font-size: 13.5px;
             color: var(--text-sub);
             line-height: 1.4;
         }
 
         /* Form Inputs */
         .input-group-custom {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
         .input-label {
             display: block;
-            font-size: 10.5px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -326,23 +372,23 @@
         }
         .form-control-custom {
             width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-dim);
+            background: var(--right-card);
+            border: 1px solid var(--right-border);
             border-radius: 10px;
-            padding: 12px 14px 12px 44px;
+            padding: 13px 14px 13px 44px;
             font-family: inherit;
-            font-size: 13.5px;
-            color: #ffffff;
+            font-size: 14px;
+            color: var(--text-pure);
             outline: none;
             transition: all 0.2s ease;
         }
         .form-control-custom::placeholder {
-            color: #485968;
+            color: #4f6374;
         }
         .form-control-custom:focus {
             border-color: var(--neon-mint);
             box-shadow: 0 0 0 3px rgba(0, 220, 130, 0.15);
-            background: var(--bg-surface);
+            background: #111a22;
         }
 
         /* Password Eye Toggle */
@@ -370,13 +416,13 @@
             color: #071710;
             border: none;
             border-radius: 10px;
-            padding: 13px;
+            padding: 14px;
             font-family: inherit;
-            font-size: 14.5px;
+            font-size: 15px;
             font-weight: 800;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 18px var(--neon-glow);
+            box-shadow: 0 4px 20px var(--neon-glow);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -385,7 +431,7 @@
         }
         .submit-btn:hover {
             background: #25e595;
-            box-shadow: 0 6px 22px rgba(0, 220, 130, 0.4);
+            box-shadow: 0 6px 26px rgba(0, 220, 130, 0.45);
             transform: translateY(-1px);
         }
         .submit-btn:active {
@@ -395,27 +441,27 @@
         /* Alerts */
         .custom-alert-error {
             background: rgba(255, 77, 77, 0.1);
-            border: 1px solid rgba(255, 77, 77, 0.3);
+            border: 1px solid rgba(255, 77, 77, 0.35);
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 11px 14px;
             color: #ff6b6b;
-            font-size: 12.5px;
+            font-size: 13px;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
         .custom-alert-logout {
             background: rgba(0, 220, 130, 0.1);
-            border: 1px solid rgba(0, 220, 130, 0.25);
+            border: 1px solid rgba(0, 220, 130, 0.3);
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 11px 14px;
             color: var(--neon-mint);
-            font-size: 12.5px;
+            font-size: 13px;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
         .btn-close-alert {
             background: transparent;
@@ -433,7 +479,7 @@
         }
 
         .form-footer {
-            margin-top: 24px;
+            margin-top: 26px;
             text-align: center;
             font-size: 11px;
             color: var(--text-sub);
@@ -452,23 +498,19 @@
 
 <div class="login-wrapper">
 
-    <!-- ══════════ LEFT SHOWCASE PANEL ══════════ -->
+    <!-- ══════════ LEFT SHOWCASE PANEL (RICH EMERALD SLATE CONTRAST) ══════════ -->
     <div class="showcase-panel">
 
-        <!-- Top Brand -->
-        <div class="brand-header">
-            <div class="brand-box">
-                <i class="bi bi-box-seam-fill"></i>
-            </div>
-            <span class="brand-title">inventra</span>
-            <span class="brand-badge">Retail Terminal</span>
+        <!-- Top Status Pill -->
+        <div class="terminal-pill-badge">
+            <span class="pulse-indicator"></span>
+            Cloud POS Terminal &bull; Online Node
         </div>
 
-        <!-- Hero Headline & Description -->
+        <!-- Hero Headline (BIGGER & SINGLE LINE) -->
         <div class="hero-content">
             <h1 class="hero-title">
-                Smart Retail POS &amp;<br>
-                <span>Inventory Ledger</span>
+                Smart Retail POS &amp; <span>Inventory Ledger</span>
             </h1>
             <p class="hero-desc">
                 Real-time stock monitoring, automated customer khata reconciliation, and fast point-of-sale checkout in one unified workspace.
@@ -479,8 +521,8 @@
         <div class="preview-card">
             <div class="preview-header">
                 <div class="preview-header-title">
-                    <span class="pulse-indicator"></span>
-                    Terminal Stock Live Feed
+                    <i class="bi bi-broadcast text-success me-1"></i>
+                    Live Terminal Stock Feed
                 </div>
                 <span class="item-badge badge-optimal">System Active</span>
             </div>
@@ -501,7 +543,7 @@
                 </div>
             </div>
 
-            <!-- Sample Product Snapshot -->
+            <!-- Product Snapshot List -->
             <div class="item-list">
                 <div class="stock-item">
                     <div class="item-meta">
@@ -540,16 +582,27 @@
 
         <!-- Showcase Footer -->
         <div class="showcase-footer">
-            <span><i class="bi bi-shield-check text-success me-1"></i> Role-Based Access Control</span>
+            <span><i class="bi bi-shield-check text-success me-1"></i> Role-Based Access</span>
             <span>&bull;</span>
             <span><i class="bi bi-hdd-network text-info me-1"></i> Multi-Terminal Synchronized</span>
         </div>
 
     </div>
 
-    <!-- ══════════ RIGHT LOGIN FORM PANEL ══════════ -->
+    <!-- ══════════ RIGHT LOGIN FORM PANEL (DEEP OBSIDIAN) ══════════ -->
     <div class="form-panel">
         <div class="form-container">
+
+            <!-- INVENTRA BRAND HEADER MOVED HERE DIRECTLY ON TOP OF SIGN IN -->
+            <div class="brand-header-right">
+                <div class="brand-box">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <div>
+                    <span class="brand-title">inventra</span>
+                    <span class="brand-badge">Retail Terminal</span>
+                </div>
+            </div>
 
             <!-- Title & Subtitle -->
             <div class="login-head">
@@ -557,7 +610,7 @@
                 <p>Enter your credentials to access the terminal.</p>
             </div>
 
-            <!-- Error Alerts -->
+            <!-- Error / Logout Alerts -->
             <div th:if="${param.error}" id="errorAlert" class="custom-alert-error">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span class="flex-grow-1">Invalid username or password. Please verify your credentials.</span>
@@ -574,7 +627,7 @@
                 </button>
             </div>
 
-            <!-- Manual Login Form (Plain Action to avoid CSRF session issues) -->
+            <!-- Manual Login Form (Plain Action) -->
             <form action="/login" method="post">
 
                 <!-- Username Input -->
