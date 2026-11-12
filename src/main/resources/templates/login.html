@@ -416,6 +416,20 @@
             gap: 10px;
             margin-bottom: 22px;
         }
+        .btn-close-alert {
+            background: transparent;
+            border: none;
+            color: inherit;
+            opacity: 0.7;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0 4px;
+            margin-left: auto;
+        }
+        .btn-close-alert:hover {
+            opacity: 1;
+        }
 
         .form-footer {
             margin-top: 36px;
@@ -541,14 +555,20 @@
             </div>
 
             <!-- Error Alerts -->
-            <div th:if="${param.error}" class="custom-alert-error">
+            <div th:if="${param.error}" id="errorAlert" class="custom-alert-error">
                 <i class="bi bi-exclamation-circle-fill"></i>
-                <span>Invalid username or password. Please verify your credentials.</span>
+                <span class="flex-grow-1">Invalid username or password. Please verify your credentials.</span>
+                <button type="button" class="btn-close-alert" onclick="this.parentElement.remove()" aria-label="Close">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
 
-            <div th:if="${param.logout}" class="custom-alert-logout">
+            <div th:if="${param.logout}" id="logoutAlert" class="custom-alert-logout">
                 <i class="bi bi-check-circle-fill"></i>
-                <span>You have been signed out successfully.</span>
+                <span class="flex-grow-1">You have been signed out successfully.</span>
+                <button type="button" class="btn-close-alert" onclick="this.parentElement.remove()" aria-label="Close">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
 
             <!-- Manual Login Form (Plain Action to avoid CSRF session issues) -->
@@ -608,6 +628,11 @@
 </div>
 
 <script>
+    // Clean ?error and ?logout from URL so refresh (F5) doesn't keep showing the alert
+    if (window.location.search) {
+        window.history.replaceState(null, '', window.location.pathname);
+    }
+
     function togglePasswordVisibility() {
         const input = document.getElementById('password');
         const icon = document.getElementById('pwdEyeIcon');
