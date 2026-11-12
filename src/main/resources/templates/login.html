@@ -27,21 +27,20 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
+        html, body {
+            height: 100%;
+            overflow: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg-obsidian);
             color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: stretch;
-            overflow-x: hidden;
         }
 
-        /* ─── GRID LAYOUT: 55% LEFT / 45% RIGHT ─── */
+        /* ─── FULL SCREEN 1-VIEW WRAPPER ─── */
         .login-wrapper {
             display: flex;
             width: 100vw;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* ─── LEFT SHOWCASE PANEL ─── */
@@ -49,11 +48,12 @@
             flex: 1.15;
             background: radial-gradient(circle at 10% 20%, #131d24 0%, #0c1216 100%);
             border-right: 1px solid var(--border-dim);
-            padding: 56px 64px;
+            padding: 28px 48px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            overflow: hidden;
         }
 
         .showcase-panel::before {
@@ -63,7 +63,7 @@
             background-image:
                 linear-gradient(rgba(0, 220, 130, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 220, 130, 0.03) 1px, transparent 1px);
-            background-size: 32px 32px;
+            background-size: 28px 28px;
             pointer-events: none;
         }
 
@@ -71,75 +71,76 @@
         .brand-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             position: relative;
             z-index: 2;
         }
         .brand-box {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             background: var(--neon-mint);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #05140d;
-            font-size: 22px;
-            box-shadow: 0 0 24px var(--neon-glow);
+            font-size: 18px;
+            box-shadow: 0 0 20px var(--neon-glow);
         }
         .brand-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.4px;
             color: #ffffff;
         }
         .brand-badge {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             background: rgba(0, 220, 130, 0.12);
             color: var(--neon-mint);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 20px;
             border: 1px solid rgba(0, 220, 130, 0.25);
-            margin-left: 6px;
+            margin-left: 4px;
         }
 
-        /* Headline & Overview */
+        /* Hero Headline & Description */
         .hero-content {
-            margin-top: 36px;
-            margin-bottom: 32px;
+            margin-top: 14px;
+            margin-bottom: 14px;
             position: relative;
             z-index: 2;
         }
         .hero-title {
-            font-size: 34px;
+            font-size: 26px;
             font-weight: 800;
-            line-height: 1.25;
-            letter-spacing: -0.8px;
+            line-height: 1.22;
+            letter-spacing: -0.6px;
             color: #ffffff;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
         }
         .hero-title span {
             color: var(--neon-mint);
         }
         .hero-desc {
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 12.5px;
+            line-height: 1.5;
             color: var(--text-sub);
-            max-width: 520px;
+            max-width: 480px;
+            margin: 0;
         }
 
-        /* Real Inventory Terminal Card Showcase */
+        /* Inventory Terminal Card Showcase */
         .preview-card {
             background: var(--bg-card);
             border: 1px solid var(--border-dim);
-            border-radius: 18px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 16px 18px;
             position: relative;
             z-index: 2;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
         .preview-header {
@@ -147,11 +148,11 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-dim);
-            padding-bottom: 16px;
-            margin-bottom: 18px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
         }
         .preview-header-title {
-            font-size: 13px;
+            font-size: 11.5px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -161,51 +162,51 @@
             gap: 8px;
         }
         .pulse-indicator {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: var(--neon-mint);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--neon-mint);
+            box-shadow: 0 0 8px var(--neon-mint);
         }
 
-        /* Metric Highlights inside Showcase */
+        /* Metric Highlights */
         .metric-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
         .metric-tile {
             background: var(--bg-surface);
             border: 1px solid var(--border-dim);
-            border-radius: 12px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            padding: 8px 12px;
         }
         .metric-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-sub);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .metric-value {
-            font-size: 19px;
+            font-size: 16px;
             font-weight: 800;
             color: #ffffff;
         }
 
-        /* Product Stock Snapshot Items */
+        /* Product Stock Items */
         .item-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .stock-item {
-            background: rgba(17, 23, 29, 0.6);
+            background: rgba(17, 23, 29, 0.65);
             border: 1px solid var(--border-dim);
-            border-radius: 10px;
-            padding: 12px 14px;
+            border-radius: 8px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -213,34 +214,34 @@
         .item-meta {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .item-icon {
-            width: 34px;
-            height: 34px;
+            width: 28px;
+            height: 28px;
             background: rgba(0, 220, 130, 0.08);
             border: 1px solid rgba(0, 220, 130, 0.2);
             color: var(--neon-mint);
-            border-radius: 8px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 13px;
         }
         .item-name {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #ffffff;
         }
         .item-category {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-sub);
         }
         .item-badge {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 2px 7px;
+            border-radius: 5px;
         }
         .badge-optimal {
             background: rgba(0, 220, 130, 0.12);
@@ -255,81 +256,82 @@
 
         /* Left Footer */
         .showcase-footer {
-            margin-top: 28px;
-            font-size: 12px;
+            margin-top: 12px;
+            font-size: 11px;
             color: var(--text-sub);
             position: relative;
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
         /* ─── RIGHT LOGIN FORM PANEL ─── */
         .form-panel {
             flex: 0.85;
             background: var(--bg-obsidian);
-            padding: 56px 64px;
+            padding: 32px 48px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .form-container {
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
         }
 
         .login-head {
-            margin-bottom: 32px;
+            margin-bottom: 22px;
         }
         .login-head h2 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
-            letter-spacing: -0.6px;
+            letter-spacing: -0.5px;
             color: #ffffff;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         .login-head p {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-sub);
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         /* Form Inputs */
         .input-group-custom {
-            margin-bottom: 22px;
+            margin-bottom: 16px;
         }
         .input-label {
             display: block;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-sub);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .input-wrapper {
             position: relative;
         }
         .input-icon {
             position: absolute;
-            left: 16px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-sub);
-            font-size: 17px;
+            font-size: 16px;
             pointer-events: none;
         }
         .form-control-custom {
             width: 100%;
             background: var(--bg-card);
             border: 1px solid var(--border-dim);
-            border-radius: 12px;
-            padding: 14px 16px 14px 46px;
+            border-radius: 10px;
+            padding: 12px 14px 12px 44px;
             font-family: inherit;
-            font-size: 14px;
+            font-size: 13.5px;
             color: #ffffff;
             outline: none;
             transition: all 0.2s ease;
@@ -352,7 +354,7 @@
             background: transparent;
             border: none;
             color: var(--text-sub);
-            font-size: 17px;
+            font-size: 16px;
             cursor: pointer;
             padding: 4px;
             line-height: 1;
@@ -367,24 +369,23 @@
             background: var(--neon-mint);
             color: #071710;
             border: none;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 13px;
             font-family: inherit;
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 800;
-            letter-spacing: 0.01em;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 20px var(--neon-glow);
+            box-shadow: 0 4px 18px var(--neon-glow);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 6px;
         }
         .submit-btn:hover {
             background: #25e595;
-            box-shadow: 0 6px 26px rgba(0, 220, 130, 0.4);
+            box-shadow: 0 6px 22px rgba(0, 220, 130, 0.4);
             transform: translateY(-1px);
         }
         .submit-btn:active {
@@ -395,26 +396,26 @@
         .custom-alert-error {
             background: rgba(255, 77, 77, 0.1);
             border: 1px solid rgba(255, 77, 77, 0.3);
-            border-radius: 10px;
-            padding: 12px 16px;
+            border-radius: 8px;
+            padding: 10px 14px;
             color: #ff6b6b;
-            font-size: 13px;
+            font-size: 12.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 22px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
         .custom-alert-logout {
             background: rgba(0, 220, 130, 0.1);
             border: 1px solid rgba(0, 220, 130, 0.25);
-            border-radius: 10px;
-            padding: 12px 16px;
+            border-radius: 8px;
+            padding: 10px 14px;
             color: var(--neon-mint);
-            font-size: 13px;
+            font-size: 12.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 22px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
         .btn-close-alert {
             background: transparent;
@@ -422,7 +423,7 @@
             color: inherit;
             opacity: 0.7;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1;
             padding: 0 4px;
             margin-left: auto;
@@ -432,14 +433,16 @@
         }
 
         .form-footer {
-            margin-top: 36px;
+            margin-top: 24px;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-sub);
         }
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 992px) {
+            html, body { overflow: auto; }
+            .login-wrapper { height: auto; min-height: 100vh; flex-direction: column; }
             .showcase-panel { display: none; }
             .form-panel { flex: 1; padding: 32px 24px; }
         }
