@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -215,7 +215,6 @@
                             <a href="/pos" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.3);">
                                 <i class="bi bi-cart3 me-1"></i> POS Counter
                             </a>
-
                             <a href="/products/export" class="btn btn-sm px-3 rounded-pill fw-bold" style="background: #172228; color: var(--neon-mint); border: 1px solid rgba(0, 220, 130, 0.4);" title="Export Inventory CSV">
                                 <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> 📥 Export Inventory CSV
                             </a>
@@ -294,53 +293,53 @@
 
                     <!-- VIEW 2: Audit Table View -->
                     <div id="productTableView" style="display: none;">
-                        <div class="filter-panel p-0 overflow-hidden">
-                            <div class="table-responsive">
-                                <table class="table mb-0 align-middle" style="color: #cfd8dc;">
-                                    <thead style="background: #141b1f;">
-                                        <tr>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Product</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">SKU</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Department</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Stock</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Cost</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Selling</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Margin</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small">Expiry</th>
-                                            <th class="py-3 px-3 text-secondary text-uppercase small text-end">Action</th>
+                        <div class="filter-panel p-0 overflow-hidden" style="background: #151d21 !important; border: 1px solid var(--card-border);">
+                            <div class="table-responsive" style="background: #151d21 !important;">
+                                <table class="table table-dark table-hover mb-0 align-middle" style="--bs-table-bg: #151d21 !important; background-color: #151d21 !important; color: #e2e8f0 !important;">
+                                    <thead style="background: #11181c !important; --bs-table-bg: #11181c !important;">
+                                        <tr style="background: #11181c !important;">
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Product</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">SKU</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Department</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Stock</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Cost</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Selling</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Margin</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Expiry</th>
+                                            <th class="py-3 px-3 text-secondary text-uppercase small text-end" style="background-color: #11181c !important; color: #8fa0b0 !important; border-bottom: 1px solid #253138;">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="productTableBody">
+                                    <tbody id="productTableBody" style="background: #151d21 !important;">
                                         <tr th:each="product : ${products}" 
                                             class="product-item-row" 
                                             th:attr="data-name=${product.name}, data-category=${product.category}, data-price=${product.price}, data-stock=${product.stockQuantity}, data-expiring=${product.isExpiringSoon()}, data-lowstock=${product.stockQuantity <= 5}"
-                                            style="border-bottom: 1px solid var(--card-border);">
+                                            style="background-color: #151d21 !important; border-bottom: 1px solid var(--card-border);">
                                             
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" style="background-color: inherit !important;">
                                                 <div class="d-flex align-items-center gap-3">
                                                     <img th:src="${product.displayImage}" alt="Product" style="width: 36px; height: 36px; object-fit: cover; border-radius: 8px; background: #fff;" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=100&auto=format&fit=crop&q=80'">
-                                                    <div class="fw-bold text-white small" th:text="${product.name}">Fortune Oil</div>
+                                                    <div class="fw-bold text-white small" style="color: #ffffff !important;" th:text="${product.name}">Fortune Oil</div>
                                                 </div>
                                             </td>
-                                            <td class="py-3 px-3 text-secondary small" th:text="${product.displaySku}">SKU-GRO-001</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3 text-secondary small" style="background-color: inherit !important; color: #8fa0b0 !important;" th:text="${product.displaySku}">SKU-GRO-001</td>
+                                            <td class="py-3 px-3" style="background-color: inherit !important;">
                                                 <span class="badge" style="background: #1c272e; color: #a4b0be;" th:text="${product.category}">Groceries</span>
                                             </td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" style="background-color: inherit !important;">
                                                 <span th:class="${product.stockQuantity <= 5 ? 'fw-bold text-danger' : 'fw-bold text-white'}" th:text="${product.stockQuantity + ' in stock'}">48 in stock</span>
                                                 <span th:if="${product.stockQuantity <= 5}" class="tag-low ms-1">Low</span>
                                             </td>
-                                            <td class="py-3 px-3 text-secondary small" th:text="${product.purchasePrice != null ? '₹' + #numbers.formatDecimal(product.purchasePrice, 1, 2) : '—'}">₹116.00</td>
-                                            <td class="py-3 px-3 fw-bold text-white" th:text="${'₹' + #numbers.formatDecimal(product.price, 1, 2)}">₹145.00</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3 text-secondary small" style="background-color: inherit !important; color: #8fa0b0 !important;" th:text="${product.purchasePrice != null ? '₹' + #numbers.formatDecimal(product.purchasePrice, 1, 2) : '—'}">₹116.00</td>
+                                            <td class="py-3 px-3 fw-bold text-white" style="background-color: inherit !important; color: #ffffff !important;" th:text="${'₹' + #numbers.formatDecimal(product.price, 1, 2)}">₹145.00</td>
+                                            <td class="py-3 px-3" style="background-color: inherit !important;">
                                                 <span class="margin-pill" th:text="${'+' + product.getMarginPercent() + '%'}">+21%</span>
                                             </td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" style="background-color: inherit !important;">
                                                 <span th:if="${product.isExpired()}" class="tag-low">Expired</span>
                                                 <span th:if="${!product.isExpired() && product.isExpiringSoon()}" class="tag-expiring">Expiring Soon</span>
-                                                <span th:if="${!product.isExpired() && !product.isExpiringSoon()}" class="text-secondary small" th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd MMM yyyy') : 'No Expiry'}">15 Dec 2026</span>
+                                                <span th:if="${!product.isExpired() && !product.isExpiringSoon()}" class="text-secondary small" style="color: #8fa0b0 !important;" th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd MMM yyyy') : 'No Expiry'}">15 Dec 2026</span>
                                             </td>
-                                            <td class="py-3 px-3 text-end">
+                                            <td class="py-3 px-3 text-end" style="background-color: inherit !important;">
                                                 <div class="d-inline-flex gap-2">
                                                     <a th:href="@{'/pos?productId=' + ${product.id}}" class="btn btn-sm px-2 py-1 rounded-pill fw-bold" style="background: rgba(0, 220, 130, 0.15); color: var(--neon-mint); font-size: 11px;" title="Bill at POS">
                                                         <i class="bi bi-cart-plus"></i> Bill
@@ -352,6 +351,10 @@
                                             </td>
                                         </tr>
                                     </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                                 </table>
                             </div>
                         </div>

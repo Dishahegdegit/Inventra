@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product - Inventra</title>
+    <title>Add Product — Inventra</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -13,97 +13,198 @@
 </head>
 <body>
 
-    <!-- Top Navbar -->
-    <header class="inventoory-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <a href="/" class="brand-logo">
-                <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
-                <span>inventra</span>
-            </a>
-            <nav class="nav-pill-group">
-                <a href="/" class="nav-pill-link"><i class="bi bi-grid-1x2"></i> Dashboard</a>
-                <a href="/products" class="nav-pill-link active"><i class="bi bi-bag-check-fill"></i> Inventory</a>
-                <a href="/pos" class="nav-pill-link"><i class="bi bi-cart3"></i> Sales (POS)</a>
-                <a href="/customers" class="nav-pill-link"><i class="bi bi-journal-bookmark"></i> Khata</a>
-            </nav>
-            <div></div>
-        </div>
-    </header>
+<div class="app-layout">
 
-    <div class="container py-5" style="max-width: 650px;">
-        <div class="filter-panel p-4 shadow-lg">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-bold text-white mb-1"><i class="bi bi-plus-circle-fill me-2" style="color: var(--neon-mint);"></i> New Catalog Item</h3>
-                    <p class="text-secondary small mb-0">Register a new product with pricing, category, and image</p>
-                </div>
-                <a href="/products" class="btn btn-sm btn-outline-secondary rounded-pill px-3">← Back</a>
+    <!-- ══════════ LEFT COLLAPSIBLE SIDEBAR ══════════ -->
+    <aside class="app-sidebar" id="appSidebar">
+        <div>
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header d-flex align-items-center justify-content-between mb-4 px-1">
+                <a href="/" class="brand-logo text-decoration-none">
+                    <div class="brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <span class="sidebar-brand-name fw-bold ms-2 fs-5">inventra</span>
+                </a>
+                <button type="button" class="sidebar-toggle-btn d-none d-lg-inline-flex" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="bi bi-chevron-bar-left" id="sidebarChevron"></i>
+                </button>
             </div>
 
-            <form th:action="@{/products/add}" th:object="${product}" method="post">
-                
-                <!-- Product Name -->
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-bold">PRODUCT NAME</label>
-                    <input type="text" th:field="*{name}" class="inventoory-search ps-3" placeholder="e.g. Amul Taaza Toned Milk 500ml" required>
-                </div>
-
-                <!-- Category & SKU -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">CATEGORY</label>
-                        <select th:field="*{category}" class="form-select filter-select">
-                            <option value="Dairy">Dairy & Cold</option>
-                            <option value="Grains & Flour">Grains & Flour</option>
-                            <option value="Snacks">Snacks & Confectionery</option>
-                            <option value="Cooking & Oils">Cooking & Oils</option>
-                            <option value="Beverages">Beverages & Coffee</option>
-                            <option value="Household">Household & Hygiene</option>
-                            <option value="General">General Grocery</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">SKU / BARCODE</label>
-                        <input type="text" th:field="*{sku}" class="inventoory-search ps-3" placeholder="e.g. SKU-MLK-0012">
-                    </div>
-                </div>
-
-                <!-- Retail Price & Purchase Cost -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">SELLING RETAIL PRICE (₹)</label>
-                        <input type="number" step="0.5" th:field="*{price}" class="inventoory-search ps-3" placeholder="32.0" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">PURCHASE COST (₹)</label>
-                        <input type="number" step="0.5" th:field="*{purchasePrice}" class="inventoory-search ps-3" placeholder="26.0">
-                    </div>
-                </div>
-
-                <!-- Stock Quantity & Expiry Date -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">INITIAL STOCK QUANTITY</label>
-                        <input type="number" th:field="*{stockQuantity}" class="inventoory-search ps-3" placeholder="20" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">EXPIRY DATE</label>
-                        <input type="date" th:field="*{expiryDate}" class="inventoory-search ps-3" required>
-                    </div>
-                </div>
-
-                <!-- Product Photo URL -->
-                <div class="mb-4">
-                    <label class="form-label text-secondary small fw-bold">PRODUCT IMAGE WEB URL (OPTIONAL)</label>
-                    <input type="url" th:field="*{imageUrl}" class="inventoory-search ps-3" placeholder="https://images.unsplash.com/... (or leave blank for auto-image)">
-                </div>
-
-                <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill" style="background: var(--neon-mint); color: #0b1013;">
-                    <i class="bi bi-check2-circle me-1"></i> Save Product to Catalog
-                </button>
-            </form>
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <a href="/" class="sidebar-nav-link" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/pos" class="sidebar-nav-link">
+                    <i class="bi bi-cart3"></i>
+                    <span class="sidebar-text">POS Terminal</span>
+                </a>
+                <a href="/products" class="sidebar-nav-link active">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="sidebar-text">Product Master</span>
+                </a>
+                <a href="/customers" class="sidebar-nav-link">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span class="sidebar-text">Khata Directory</span>
+                </a>
+            </nav>
         </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer pt-3 border-top" style="border-color: var(--card-border) !important;">
+            <div class="d-flex align-items-center justify-content-between px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 14px; background: #1c272e; color: var(--neon-mint);">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="text-white fw-bold small text-truncate" style="max-width: 100px;" sec:authentication="name">User</div>
+                        <div class="text-secondary" style="font-size: 10.5px;">Active Terminal</div>
+                    </div>
+                </div>
+                <form action="/login?logout" method="post" class="m-0">
+                    <button type="submit" class="sidebar-toggle-btn text-danger p-0 border-0 bg-transparent" title="Logout">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ══════════ MAIN CONTENT AREA ══════════ -->
+    <div class="app-main">
+
+        <!-- Top Header Bar -->
+        <header class="app-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="sidebar-toggle-btn d-lg-none" onclick="toggleSidebarMobile()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="/"><i class="bi bi-house-door"></i> Home</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <a href="/products">Product Master</a>
+                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
+                    <span class="active">New Catalog Item</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="/products" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Products
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="container-fluid px-4 py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="filter-panel p-4 shadow-lg" style="background: #151d21; border: 1px solid var(--card-border); border-radius: 20px;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h3 class="fw-bold text-white mb-1">
+                                    <i class="bi bi-plus-circle-fill me-2" style="color: var(--neon-mint);"></i> New Catalog Item
+                                </h3>
+                                <p class="text-secondary small mb-0">Register a new product with pricing, category, stock and image</p>
+                            </div>
+                        </div>
+
+                        <form th:action="@{/products/add}" th:object="${product}" method="post">
+                            
+                            <!-- Product Name -->
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">PRODUCT NAME</label>
+                                <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Fortune Sunlite Sunflower Oil 1L" required>
+                            </div>
+
+                            <!-- Category & SKU -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">CATEGORY / DEPARTMENT</label>
+                                    <select th:field="*{category}" class="form-select">
+                                        <option value="Dairy">Dairy & Cold</option>
+                                        <option value="Grains & Flour">Grains & Flour</option>
+                                        <option value="Snacks">Snacks & Confectionery</option>
+                                        <option value="Cooking & Oils">Cooking & Oils</option>
+                                        <option value="Beverages">Beverages & Coffee</option>
+                                        <option value="Household">Household & Hygiene</option>
+                                        <option value="General">General Grocery</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">SKU / BARCODE</label>
+                                    <input type="text" th:field="*{sku}" class="form-control" placeholder="e.g. SKU-OIL-0012">
+                                </div>
+                            </div>
+
+                            <!-- Retail Price & Purchase Cost -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">SELLING RETAIL PRICE (₹)</label>
+                                    <input type="number" step="0.5" th:field="*{price}" class="form-control" placeholder="145.0" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">PURCHASE COST (₹) <span class="text-muted fw-normal">(For Margin)</span></label>
+                                    <input type="number" step="0.5" th:field="*{purchasePrice}" class="form-control" placeholder="116.0">
+                                </div>
+                            </div>
+
+                            <!-- Stock Quantity & Expiry Date -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">INITIAL STOCK QUANTITY</label>
+                                    <input type="number" th:field="*{stockQuantity}" class="form-control" placeholder="48" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">EXPIRY DATE</label>
+                                    <input type="date" th:field="*{expiryDate}" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <!-- Product Photo URL -->
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small fw-bold">PRODUCT IMAGE WEB URL <span class="text-muted fw-normal">(Optional)</span></label>
+                                <input type="url" th:field="*{imageUrl}" class="form-control" placeholder="https://images.unsplash.com/... (or leave blank for auto-image)">
+                            </div>
+
+                            <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill" style="background: var(--neon-mint); color: #071710; font-size: 15px;">
+                                <i class="bi bi-check2-circle me-1"></i> Save Product to Catalog
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Sidebar Toggle Logic -->
+<script>
+    function toggleSidebar() {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        localStorage.setItem('inventra_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        const icon = document.getElementById('sidebarChevron');
+        if (icon) {
+            icon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
+        }
+    }
+    function toggleSidebarMobile() {
+        document.body.classList.toggle('sidebar-open');
+    }
+    (function() {
+        if (localStorage.getItem('inventra_sidebar_collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+            const icon = document.getElementById('sidebarChevron');
+            if (icon) icon.className = 'bi bi-chevron-bar-right';
+        }
+    })();
+</script>
 
 </body>
 </html>
